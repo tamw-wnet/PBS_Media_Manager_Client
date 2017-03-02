@@ -129,7 +129,6 @@ class PBS_Media_Manager_API_Client {
 
   public function delete_object($id, $type) {
     $endpoint = "/" . $type . "/" . $id . "/";
-    $payload_json = json_encode($data);
     $request_url = $this->base_endpoint . $endpoint;
     $ch = $this->build_curl_handle($request_url);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -224,8 +223,8 @@ class PBS_Media_Manager_API_Client {
     if ($window !== 'all') {
       // validate and construct the window arg
       $requested_windows = explode(',', $window);
-      foreach ($requested_windows as $thiswindow) {
-        if (!in_array($window, $windows)) {
+      foreach ($requested_windows as $req_window) {
+        if (!in_array($req_window, $windows)) {
           return false;
         }
       }
