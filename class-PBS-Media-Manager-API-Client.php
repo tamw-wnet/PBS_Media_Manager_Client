@@ -231,11 +231,9 @@ class PBS_Media_Manager_API_Client {
       }
       $windows = $requested_windows;
     }
-    // PBS requires requesting assets from the 'extra' endpoint if its not a part of an episode or special
-    $child_type = ($parent_type != 'episodes' && $parent_type != 'specials') ? 'extras' : 'assets';
 
     $result_data = array();
-    $raw_result = $this->get_child_items_of_type($parent_id, $parent_type, $child_type, $page);
+    $raw_result = $this->get_child_items_of_type($parent_id, $parent_type, 'assets', $page);
     foreach ($raw_result as $result) {
       // only include the right asset_types
       if (!in_array($result['attributes']['object_type'], $asset_types)) {
