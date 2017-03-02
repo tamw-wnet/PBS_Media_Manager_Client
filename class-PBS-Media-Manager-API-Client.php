@@ -97,12 +97,21 @@ class PBS_Media_Manager_API_Client {
     return $result;
   }
 
+  private function _get_update_endpoint($id, $type) {
+    return $endpoint = "/" . $type . "s/" . $id . "/edit/";
+  }
+
+  public function get_updatable_object($id, $type) {
+    return $this->get_request(
+      $this->_get_update_endpoint($id, $type)
+    );
+  }
 
   /* main constructor for updating objects
    * asset, episode, special, collection, season */
   public function update_object($id, $type, $attribs = array()) {
     /* in the MM API, update is a PATCH */
-    $endpoint = "/" . $type . "s/" . $id . "/edit/";
+    $endpoint = $this->_get_update_endpoint($id, $type);
     $data = array(
       "data" => array(
         "type" => $type,
