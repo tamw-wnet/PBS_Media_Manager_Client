@@ -11,7 +11,8 @@ class PBS_Media_Manager_API_Client {
   public  $container_types;
   public  $passport_windows;
   public  $asset_types;
-  public  $episode_asset_types; 
+  public  $episode_asset_types;
+  public  $video_profiles;
 
   public function __construct($client_id = '', $client_secret = '', $base_endpoint =''){
     $this->client_id = $client_id;
@@ -24,6 +25,7 @@ class PBS_Media_Manager_API_Client {
     $this->passport_windows = array('public', 'all_members', 'station_members', 'unavailable');
     $this->asset_types = array('preview', 'clip', 'extra');
     $this->episode_asset_types = array('preview', 'clip', 'extra', 'full_length');
+    $this->video_profiles = array('hd-1080p-mezzanine-16x9', 'hd-1080p-mezzanine-4x3', 'hd-mezzanine-16x9', 'hd-mezzanine-4x3');
   }
 
 
