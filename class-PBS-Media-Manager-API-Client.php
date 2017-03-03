@@ -68,7 +68,8 @@ class PBS_Media_Manager_API_Client {
   /* main constructor for creating elements 
    * asset, episode, special, collection, season */
   public function create_child($parent_id, $parent_type, $type, $attribs = array()) {
-    /* note that $parent_id can also be a slug */
+    /* on success returns the url path of the editable asset 
+     * note that $parent_id can also be a slug */
     $endpoint = "/" . $parent_type . "s/" . $parent_id . "/" . $type . "s/";
     $data = array(
       "data" => array(
@@ -81,7 +82,8 @@ class PBS_Media_Manager_API_Client {
     $payload_json = json_encode($data);
     $request_url = $this->base_endpoint . $endpoint;
     $ch = $this->build_curl_handle($request_url);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
+    curl_setopt($ch, CURLOPT_HEADER, TRUE);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload_json);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Content-Length: ' . strlen($payload_json)));
     $result=curl_exec($ch);
@@ -93,8 +95,9 @@ class PBS_Media_Manager_API_Client {
     }
     /* successful request will return a 201 and the location of the created object 
      * we'll follow that location and parse the resulting JSON to return the cid */
-    $result = json_decode($result, TRUE);
-    return $result;
+    preg_match("!\r\n(?:Location|URI): *(.*?) *\r\n!", $result, $matches);
+    $url = $matches[1];
+    return $url;
   }
 
 
