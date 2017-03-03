@@ -38,9 +38,9 @@ Assets need more filtering, so getting assets allows for more args
 
 ```php
 $client->get_episode_assets($episode_id, $asset_type='all', $window='all');
-$client->get_special_assets($episode_id, $asset_type='all', $window='all');
-$client->get_season_assets($episode_id, $asset_type='all', $window='all');
-$client->get_franchise_assets($episode_id, $asset_type='all', $window='all');
+$client->get_special_assets($special_id, $asset_type='all', $window='all');
+$client->get_season_assets($season_id, $asset_type='all', $window='all');
+$client->get_franchise_assets($franchise_id, $asset_type='all', $window='all');
 ```
 
 Images are a little different
