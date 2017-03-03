@@ -102,12 +102,21 @@ class PBS_Media_Manager_API_Client {
     return $segments[1];
   }
 
+  private function _get_update_endpoint($id, $type) {
+    return $endpoint = "/" . $type . "s/" . $id . "/edit/";
+  }
+
+  public function get_updatable_object($id, $type) {
+    return $this->get_request(
+      $this->_get_update_endpoint($id, $type)
+    );
+  }
 
   /* main constructor for updating objects
    * asset, episode, special, collection, season */
   public function update_object($id, $type, $attribs = array()) {
     /* in the MM API, update is a PATCH */
-    $endpoint = "/" . $type . "s/" . $id . "/edit/";
+    $endpoint = $this->_get_update_endpoint($id, $type);
     $data = array(
       "data" => array(
         "type" => $type,
@@ -134,7 +143,6 @@ class PBS_Media_Manager_API_Client {
 
   public function delete_object($id, $type) {
     $endpoint = "/" . $type . "/" . $id . "/";
-    $payload_json = json_encode($data);
     $request_url = $this->base_endpoint . $endpoint;
     $ch = $this->build_curl_handle($request_url);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -229,18 +237,16 @@ class PBS_Media_Manager_API_Client {
     if ($window !== 'all') {
       // validate and construct the window arg
       $requested_windows = explode(',', $window);
-      foreach ($requested_windows as $thiswindow) {
-        if (!in_array($window, $windows)) {
+      foreach ($requested_windows as $req_window) {
+        if (!in_array($req_window, $windows)) {
           return false;
         }
       }
       $windows = $requested_windows;
     }
-    // PBS requires requesting assets from the 'extra' endpoint if its not a part of an episode or special
-    $child_type = ($parent_type != 'episodes' && $parent_type != 'specials') ? 'extras' : 'assets';
 
     $result_data = array();
-    $raw_result = $this->get_child_items_of_type($parent_id, $parent_type, $child_type, $page);
+    $raw_result = $this->get_child_items_of_type($parent_id, $parent_type, 'assets', $page);
     foreach ($raw_result as $result) {
       // only include the right asset_types
       if (!in_array($result['attributes']['object_type'], $asset_types)) {
