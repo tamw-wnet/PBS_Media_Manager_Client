@@ -95,9 +95,11 @@ class PBS_Media_Manager_API_Client {
     }
     /* successful request will return a 201 and the location of the created object 
      * we'll follow that location and parse the resulting JSON to return the cid */
+    // get just the URI 
     preg_match("!\r\n(?:Location|URI): *(.*?) *\r\n!", $result, $matches);
-    $url = $matches[1];
-    return $url;
+    // parse out the last segment before /edit/
+    preg_match("/.*(?:\/)(.*)(?:\/edit\/)/", $matches[1], $segments);
+    return $segments[1];
   }
 
 
