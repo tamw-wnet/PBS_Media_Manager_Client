@@ -6,6 +6,10 @@ Invoke the client as so:
 
 `$client = new PBS_Media_Manager_API_Client($client_id = '', $client_secret = '', $base_endpoint ='');`
 
+The staging base_endpoint is 
+https://media-staging.services.pbs.org/api/v1 
+for instance.
+client_id and client_secret will come from PBS
 
 ### Retrieving data
 Individual retrievals for asset, episode, special, season, show, franchise by their CID or slug:
