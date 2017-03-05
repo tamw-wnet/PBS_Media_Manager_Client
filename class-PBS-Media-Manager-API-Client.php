@@ -98,10 +98,10 @@ class PBS_Media_Manager_API_Client {
     /* successful request will return a 201 and the location of the created object 
      * we'll follow that location and parse the resulting JSON to return the cid */
     // get just the URI 
-    preg_match("!\r\n(?:Location|URI): *(.*?) *\r\n!", $result, $matches);
-    // parse out the last segment before /edit/
-    preg_match("/.*(?:\/)(.*)(?:\/edit\/)/", $matches[1], $segments);
-    return $segments[1];
+    preg_match("/(Location|URI): .*?\/([a-f0-9\-]+)\/(edit\/)?(\r|\n|\r\n)/", $result, $matches);
+
+    // TODO: Unsafe indexing, how should errors be handled?
+    return $matches[2];
   }
 
   private function _get_update_endpoint($id, $type) {
