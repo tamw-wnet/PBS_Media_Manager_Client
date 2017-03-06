@@ -206,7 +206,7 @@ class PBS_Media_Manager_API_Client {
   /* main constructor for child items */
   public function get_child_items_of_type($parent_id, $parent_type, $type, $page=0) {
     /* note that $parent_id can also be a slug, but generally wont be */
-    $query = "/" . $parent_type . "/" . $parent_id . "/" . $type . "/";
+    $query = "/" . $parent_type . "s/" . $parent_id . "/" . $type . "s/";
     $queryargs = $page ? array("page" => $page) : null;
     return $this->get_list_data($query, $queryargs);
   }
@@ -232,8 +232,8 @@ class PBS_Media_Manager_API_Client {
 
 
   /* main constructor for getting assets */
-  public function get_child_assets($parent_id, $parent_type='episodes', $asset_type='all', $window='all', $page=0) {
-    $asset_types = $this->validate_asset_type_list($asset_type, $parent_type);
+  public function get_child_assets($parent_id, $parent_type='episode', $asset_type='all', $window='all', $page=0) {
+    $asset_types = $this->validate_asset_type_list($asset_type, $parent_type .'s');
     if (!$asset_types) { return false; }
     $windows = $this->passport_windows;
     if ($window !== 'all') {
@@ -248,16 +248,18 @@ class PBS_Media_Manager_API_Client {
     }
 
     $result_data = array();
-    $raw_result = $this->get_child_items_of_type($parent_id, $parent_type, 'assets', $page);
+    $raw_result = $this->get_child_items_of_type($parent_id, $parent_type, 'asset', $page);
     foreach ($raw_result as $result) {
       // only include the right asset_types
       if (!in_array($result['attributes']['object_type'], $asset_types)) {
         continue;
       }
       // only include the right windows
+      /* not yet implemented in API
       if (!in_array($result['attributes']['mvod_window'], $windows) ) {
         continue;
-      }
+      }a
+      */
       $result_data[] = $result;
     }
     return $result_data;
@@ -310,40 +312,40 @@ class PBS_Media_Manager_API_Client {
 
   /* shortcut functions for single items */
 
-  public function get_asset($id) {
-    return $this->get_item_of_type($id, 'assets');
+  public function get_asset($id, $private=false) {
+    return $this->get_item_of_type($id, 'asset', $private);
   }
 
-  public function get_episode($id) {
-    return $this->get_item_of_type($id, 'episodes');
+  public function get_episode($id, $private=false) {
+    return $this->get_item_of_type($id, 'episode');
   }
 
-  public function get_special($id) {
-    return $this->get_item_of_type($id, 'specials');
+  public function get_special($id, $private=false) {
+    return $this->get_item_of_type($id, 'special');
   }
 
   public function get_collection($id) {
-    return $this->get_item_of_type($id, 'collections');
+    return $this->get_item_of_type($id, 'collection');
   }
 
   public function get_season($id) {
-    return $this->get_item_of_type($id, 'seasons');
+    return $this->get_item_of_type($id, 'season');
   }
 
   public function get_show($id) {
-    return $this->get_item_of_type($id, 'shows');
+    return $this->get_item_of_type($id, 'show');
   }
 
   public function get_remote_asset($id) {
-    return $this->get_item_of_type($id, 'remote-assets');
+    return $this->get_item_of_type($id, 'remote-asset');
   }
 
   public function get_franchise($id) {
-    return $this->get_item_of_type($id, 'franchises');
+    return $this->get_item_of_type($id, 'franchise');
   }
 
   public function get_station($id) {
-    return $this->get_item_of_type($id, 'stations');
+    return $this->get_item_of_type($id, 'station');
   }
 
 
@@ -368,19 +370,19 @@ class PBS_Media_Manager_API_Client {
   /* shortcut functions for lists of child objects */
 
   public function get_franchise_shows($franchise_id, $page=0) {
-    return $this->get_child_items_of_type($franchise_id, 'franchises', 'shows', $page);
+    return $this->get_child_items_of_type($franchise_id, 'franchise', 'show', $page);
   } 
 
   public function get_show_seasons($show_id, $page=0) {
-    return $this->get_child_items_of_type($show_id, 'shows', 'seasons', $page);
+    return $this->get_child_items_of_type($show_id, 'show', 'season', $page);
   }
 
   public function get_show_specials($show_id, $page=0) {
-    return $this->get_child_items_of_type($show_id, 'shows', 'specials', $page);
+    return $this->get_child_items_of_type($show_id, 'show', 'special', $page);
   }
 
   public function get_season_episodes($season_id, $page=0) {
-    return $this->get_child_items_of_type($season_id, 'seasons', 'episodes', $page);
+    return $this->get_child_items_of_type($season_id, 'season', 'episode', $page);
   }
 
 
@@ -390,54 +392,54 @@ class PBS_Media_Manager_API_Client {
    * These methods also allow filtering by asset_type and window */
 
   public function get_episode_assets($episode_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($episode_id, 'episodes', $asset_type, $window, $page);
+    return $this->get_child_assets($episode_id, 'episode', $asset_type, $window, $page);
   }
 
   public function get_special_assets($special_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($special_id, 'specials', $asset_type, $window, $page);
+    return $this->get_child_assets($special_id, 'special', $asset_type, $window, $page);
   }
 
   public function get_season_assets($season_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($season_id, 'seasons', $asset_type, $window, $page);
+    return $this->get_child_assets($season_id, 'season', $asset_type, $window, $page);
   }
 
   public function get_show_assets($show_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($show_id, 'shows', $asset_type, $window, $page);
+    return $this->get_child_assets($show_id, 'show', $asset_type, $window, $page);
   }
 
   public function get_franchise_assets($franchise_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($franchise_id, 'franchises', $asset_type, $window, $page);
+    return $this->get_child_assets($franchise_id, 'franchise', $asset_type, $window, $page);
   }
 
 
   /* shortcut functions for images */
 
   public function get_franchise_images($franchise_id) {
-    return $this->get_images($franchise_id, 'franchises');
+    return $this->get_images($franchise_id, 'franchise');
   }
 
   public function get_show_images($show_id) {
-    return $this->get_images($show_id, 'shows');
+    return $this->get_images($show_id, 'show');
   }
 
   public function get_season_images($season_id) {
-    return $this->get_images($season_id, 'seasons');
+    return $this->get_images($season_id, 'season');
   }
 
   public function get_collection_images($collection_id) {
-    return $this->get_images($collection_id, 'collections');
+    return $this->get_images($collection_id, 'collection');
   }
 
   public function get_episode_images($episode_id) {
-    return $this->get_images($episode_id, 'episodes');
+    return $this->get_images($episode_id, 'episode');
   }
 
   public function get_special_images($special_id) {
-    return $this->get_images($special_id, 'specials');
+    return $this->get_images($special_id, 'special');
   }
 
   public function get_asset_images($asset_id) {
-    return $this->get_images($asset_id, 'assets');
+    return $this->get_images($asset_id, 'asset');
   }
 
 }
