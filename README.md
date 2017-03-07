@@ -74,6 +74,7 @@ args are
 * $parent_type can be 'episode', 'special', 'season', 'show'
 * $child_type can be 'asset', 'episode', 'special', 'season'
 * $attributes is an array, matching the required/optional attributes for the child.  For instance an asset might have
+
 ```php
 $attributes = array(
   'title_short' => 'My title',
@@ -114,7 +115,7 @@ $attributes = array(
      )
   )
 );
-
+```
 
 The update method either returns TRUE (aka '1') on success or an 'errors' array.
 
