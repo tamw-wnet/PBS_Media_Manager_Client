@@ -73,7 +73,7 @@ args are
 * $cid (of the parent)
 * $parent_type can be 'episode', 'special', 'season', 'show'
 * $child_type can be 'asset', 'episode', 'special', 'season'
-* $attributes is an array, matching the required/optional attributes for the child.  For instance
+* $attributes is an array, matching the required/optional attributes for the child.  For instance an asset might have
 ```php
 $attributes = array(
   'title_short' => 'My title',
@@ -97,10 +97,24 @@ There will be shortcut methods TK like 'create_episode_asset' etc.
 There's a base update method
 
 ```php
-$client->update_object($cid, $attributes);
+$client->update_object($cid, $object_type, $attributes);
 ```
 
-where $attributes will be an array as above in the create example.
+args are
+* $cid of the object 
+* $object_type can be 'asset', 'episode', 'special', 'season'
+* $attributes is an array, matching the required/optional attributes for the object.  For instance an asset might have
+```php
+$attributes = array(
+  'title_short' => 'My title',
+  'availabilities' => array(
+     'public' => array(
+       'start' => '1970-01-01 00:00:00',
+       'end' => '2020-01-01 00:00:00'
+     )
+  )
+);
+
 
 The update method either returns TRUE (aka '1') on success or an 'errors' array.
 
