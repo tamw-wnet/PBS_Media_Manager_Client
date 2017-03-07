@@ -1,5 +1,6 @@
-# PBS_Media_Manager_Client
+# PBS Media Manager Client
 PHP class that provides a client for the PBS Media Manager API
+
 
 ## Usage
 Invoke the client as so:
@@ -132,8 +133,55 @@ $client->delete_object($cid);
 
 
 ### Special functions
-changelog, looking up by TP Media Id
-TK
+
+#### Get the changelog of what's changed in the Media Manager database
+
+```php
+$client->get_changelog($args);
+```
+where $args can either be empty or an array with one or more of the following:
+
+* action can be 'update', 'delete', 'create'
+* type can be 'asset', 'episode', 'special', 'season', 'show', 'franchise' 
+* since is a timestamp in UTC, and must be formatted like so: 2017-03-06T06:35:36.001Z
+* id is an object id
+
+More details on options in the PBS documentation from <https://docs.pbs.org/display/CDA/Changelog+Endpoint>
+
+No args given will dump all changes in the last 24 hours.
+
+Here's an example of combining args -- all assets updated since March 6 at 6:35pm UTC:
+
+```php
+$client->get_changelog( array('since' => '2017-03-06T06:35:36.001Z', 'type' => 'asset', 'action' => 'update'));
+```
+
+#### looking up an asset by TP Media Id
+
+```php
+$client->get_asset_by_tp_media_id($tp_media_id)
+```
+
+returns the asset object.
+
+
+## Changelog
+
+* Version .01 ALPHA -- connects to API, provides basic read, list, update, create, and delete functionality.
+
+## Authors
+William Tam, WNET/IEG
+Augustus Mayo, TPT
+
+## Licence
+The PBS Media Manager Client is licensed under the GPL v2 or later.
+
+    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License, version 2, as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+
 
 
 
