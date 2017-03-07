@@ -98,10 +98,10 @@ class PBS_Media_Manager_API_Client {
     /* successful request will return a 201 and the location of the created object 
      * we'll follow that location and parse the resulting JSON to return the cid */
     // get just the URI 
-    preg_match("!\r\n(?:Location|URI): *(.*?) *\r\n!", $result, $matches);
-    // parse out the last segment before /edit/
-    preg_match("/.*(?:\/)(.*)(?:\/edit\/)/", $matches[1], $segments);
-    return $segments[1];
+    preg_match("/(Location|URI): .*?\/([a-f0-9\-]+)\/(edit\/)?(\r|\n|\r\n)/", $result, $matches);
+
+    // TODO: Unsafe indexing, how should errors be handled?
+    return $matches[2];
   }
 
   private function _get_update_endpoint($id, $type) {
@@ -208,10 +208,9 @@ class PBS_Media_Manager_API_Client {
 
 
   /* main constructor for child items */
-  public function get_child_items_of_type($parent_id, $parent_type, $type, $page=0) {
+  public function get_child_items_of_type($parent_id, $parent_type, $type, $queryargs=array()) {
     /* note that $parent_id can also be a slug, but generally wont be */
     $query = "/" . $parent_type . "s/" . $parent_id . "/" . $type . "s/";
-    $queryargs = $page ? array("page" => $page) : null;
     return $this->get_list_data($query, $queryargs);
   }
 
@@ -236,8 +235,8 @@ class PBS_Media_Manager_API_Client {
 
 
   /* main constructor for getting assets */
-  public function get_child_assets($parent_id, $parent_type='episode', $asset_type='all', $window='all', $page=0) {
-    $asset_types = $this->validate_asset_type_list($asset_type, $parent_type .'s');
+  public function get_child_assets($parent_id, $parent_type='episode', $asset_type='all', $window='all', $queryargs=array()) {
+    $asset_types = $this->validate_asset_type_list($asset_type, $parent_type);
     if (!$asset_types) { return false; }
     $windows = $this->passport_windows;
     if ($window !== 'all') {
@@ -252,7 +251,7 @@ class PBS_Media_Manager_API_Client {
     }
 
     $result_data = array();
-    $raw_result = $this->get_child_items_of_type($parent_id, $parent_type, 'asset', $page);
+    $raw_result = $this->get_child_items_of_type($parent_id, $parent_type, 'asset', $queryargs);
     foreach ($raw_result as $result) {
       // only include the right asset_types
       if (!in_array($result['attributes']['object_type'], $asset_types)) {
@@ -262,7 +261,7 @@ class PBS_Media_Manager_API_Client {
       /* not yet implemented in API
       if (!in_array($result['attributes']['mvod_window'], $windows) ) {
         continue;
-      }a
+      }
       */
       $result_data[] = $result;
     }
@@ -359,34 +358,32 @@ class PBS_Media_Manager_API_Client {
    * Franchises have no parent object, and shows do not 
    * have to have a parent object  */
 
-  public function get_franchises($page=0) {
+  public function get_franchises($queryargs=array()) {
     $query = "/franchises/";
-    $queryargs = $page ? array("page" => $page) : null;
     return $this->get_list_data($query, $queryargs);
   }
 
-  public function get_shows($page=0) {
+  public function get_shows($queryargs=array()) {
     $query = "/shows/";
-    $queryargs = $page ? array("page" => $page) : null;
     return $this->get_list_data($query, $queryargs);
   }
 
   /* shortcut functions for lists of child objects */
 
-  public function get_franchise_shows($franchise_id, $page=0) {
-    return $this->get_child_items_of_type($franchise_id, 'franchise', 'show', $page);
+  public function get_franchise_shows($franchise_id, $queryargs=array()) {
+    return $this->get_child_items_of_type($franchise_id, 'franchise', 'show', $queryargs);
   } 
 
-  public function get_show_seasons($show_id, $page=0) {
-    return $this->get_child_items_of_type($show_id, 'show', 'season', $page);
+  public function get_show_seasons($show_id, $queryargs=array()) {
+    return $this->get_child_items_of_type($show_id, 'show', 'season', $queryargs);
   }
 
-  public function get_show_specials($show_id, $page=0) {
-    return $this->get_child_items_of_type($show_id, 'show', 'special', $page);
+  public function get_show_specials($show_id, $queryargs=array()) {
+    return $this->get_child_items_of_type($show_id, 'show', 'special', $queryargs);
   }
 
-  public function get_season_episodes($season_id, $page=0) {
-    return $this->get_child_items_of_type($season_id, 'season', 'episode', $page);
+  public function get_season_episodes($season_id, $queryargs=array()) {
+    return $this->get_child_items_of_type($season_id, 'season', 'episode', $queryargs);
   }
 
 
@@ -395,24 +392,24 @@ class PBS_Media_Manager_API_Client {
    * if an asset is a child of an episode it is not a child of a show.  
    * These methods also allow filtering by asset_type and window */
 
-  public function get_episode_assets($episode_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($episode_id, 'episode', $asset_type, $window, $page);
+  public function get_episode_assets($episode_id, $asset_type='all', $window='all', $queryargs=array()) {
+    return $this->get_child_assets($episode_id, 'episode', $asset_type, $window, $queryargs);
   }
 
-  public function get_special_assets($special_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($special_id, 'special', $asset_type, $window, $page);
+  public function get_special_assets($special_id, $asset_type='all', $window='all', $queryargs=array()) {
+    return $this->get_child_assets($special_id, 'special', $asset_type, $window, $queryargs);
   }
 
-  public function get_season_assets($season_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($season_id, 'season', $asset_type, $window, $page);
+  public function get_season_assets($season_id, $asset_type='all', $window='all', $queryargs=array()) {
+    return $this->get_child_assets($season_id, 'season', $asset_type, $window, $queryargs);
   }
 
-  public function get_show_assets($show_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($show_id, 'show', $asset_type, $window, $page);
+  public function get_show_assets($show_id, $asset_type='all', $window='all', $queryargs=array()) {
+    return $this->get_child_assets($show_id, 'show', $asset_type, $window, $queryargs);
   }
 
-  public function get_franchise_assets($franchise_id, $asset_type='all', $window='all', $page=0) {
-    return $this->get_child_assets($franchise_id, 'franchise', $asset_type, $window, $page);
+  public function get_franchise_assets($franchise_id, $asset_type='all', $window='all', $queryargs=array()) {
+    return $this->get_child_assets($franchise_id, 'franchise', $asset_type, $window, $queryargs);
   }
 
 
