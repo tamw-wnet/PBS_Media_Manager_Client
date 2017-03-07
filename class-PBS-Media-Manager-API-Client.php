@@ -188,6 +188,8 @@ class PBS_Media_Manager_API_Client {
     }
     while ($page) {
       $querystring = !empty($args) ? "?" . http_build_query($args) : "";
+      // PBS's endpoints don't like colons to be encoded
+      $querystring = str_replace("%3A", ":", $querystring);
       $rawdata = $this->get_request($endpoint . $querystring);
       if (empty($rawdata['data'])) {
         return $rawdata;
@@ -302,8 +304,8 @@ class PBS_Media_Manager_API_Client {
     if (empty($args['since'])) {
       // default 'since' to be in the last 8hrs
       $timezone = new DateTimeZone('UTC');
-      $datetime = new DateTime("-10.5 hour", $timezone );
-      $since = $datetime->format('Y-m-d\TH:i:s');
+      $datetime = new DateTime("-24 hour", $timezone );
+      $since = $datetime->format('Y-m-d\TH:i:s.u\Z');
       $args['since'] = $since; 
     }
     $query = "/changelog/";
