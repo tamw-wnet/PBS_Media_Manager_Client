@@ -160,7 +160,7 @@ where $args can either be empty or an array with one or more of the following:
 
 More details on options in the PBS documentation from <https://docs.pbs.org/display/CDA/Changelog+Endpoint>
 
-No args given will dump all changes in the last 24 hours.
+No 'since' given will dump all changes in the last 24 hours.
 
 Here's an example of combining args -- all assets updated since March 6 at 6:35pm UTC:
 
