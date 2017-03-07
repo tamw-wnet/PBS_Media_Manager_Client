@@ -23,6 +23,14 @@ $client->get_show($cid);
 $client->get_franchise($cid);
 ```
 
+There is an additional flag required to get unpublished objects, as they're only available with a GET from the edit endpoint -- 
+
+```php
+$client->get_asset($cid, true);
+```
+The client id will need to have edit permission on the object to get that unpublished object
+
+
 Return a list of available shows or franchises (paging is optional, by default it will dump the full list
 
 ```php
@@ -55,13 +63,58 @@ $client->get_episode_images($episode_id);
 etc
 
 ### Creating items
-TK
+
+There's a base creation method
+
+```php
+$client->create_child($cid, $parent_type, $child_type, $attributes);
+```
+args are
+* $cid (of the parent)
+* $parent_type can be 'episode', 'special', 'season', 'show'
+* $child_type can be 'asset', 'episode', 'special', 'season'
+* $attributes is an array, matching the required/optional attributes for the child.  For instance
+```php
+$attributes = array(
+  'title_short' => 'My title',
+  'availabilities' => array(
+     'public' => array( 
+       'start' => '1970-01-01 00:00:00',
+       'end' => '2020-01-01 00:00:00'
+     )
+  )
+);
+```
+
+The method returns either the CID of the created object, or an 'errors' array.
+
+There will be shortcut methods TK like 'create_episode_asset' etc.
+
+
 
 ### Updating items
-TK
+
+There's a base update method
+
+```php
+$client->update_object($cid, $attributes);
+```
+
+where $attributes will be an array as above in the create example.
+
+The update method either returns TRUE (aka '1') on success or an 'errors' array.
+
+There will be helper methods TK specifically for handling video, image, and caption file additions.   These file additions have additional logic required.
+
 
 ### Deleting items
-TK
+
+Very simple -- 
+
+```php
+$client->delete_object($cid);
+```
+
 
 ### Special functions
 changelog, looking up by TP Media Id
