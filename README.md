@@ -13,7 +13,8 @@ for instance.
 client_id and client_secret will come from PBS
 
 ### Retrieving data
-Individual retrievals for asset, episode, special, season, show, franchise by their CID or slug:
+
+#### Get an individual asset, episode, special, season, show, franchise by it's CID or slug:
 
 ```php
 $client->get_asset($cid);
@@ -32,14 +33,16 @@ $client->get_asset($cid, true);
 The client id will need to have edit permission on the object to get that unpublished object
 
 
-Return a list of available shows or franchises (paging is optional, by default it will dump the full list
+#### Get a list of available shows or franchises 
 
 ```php
 $client->get_shows();
 $client->get_franchises();
 ```
 
-Return a list of child elements of the given CID for shows or seasons 
+#### Get a list of child elements of the given CID 
+
+##### Get shows, seasons, episodes 
 
 ```php
 $client->get_show_seasons($cid);
@@ -47,7 +50,16 @@ $client->get_show_specials($cid);
 $client->get_season_episodes($cid);
 ```
 
-Assets need more filtering, so getting assets allows for more args
+NOTE that for any of our 'list' functions, the client returns an unpaged list of all available results, even though the Media Manager API from PBS automatically pages results. 
+For very large returns it may be useful to use paging -- the list of all available shows could be long, or a daily news show might have 300+ episodes in a season. 
+To implement paging, add an array arg with a 'page' element that is the corresponding paged from the PBS API -- eg 
+
+```php
+$client->get_shows(array('page' => 2));
+$client->get_season_episodes($cid, array('page' => 3));
+```
+
+##### Assets need more filtering, so getting assets allows for more args
 
 ```php
 $client->get_episode_assets($episode_id, $asset_type='all', $window='all');
@@ -56,7 +68,7 @@ $client->get_season_assets($season_id, $asset_type='all', $window='all');
 $client->get_franchise_assets($franchise_id, $asset_type='all', $window='all');
 ```
 
-Images are a little different
+##### Getting images is a little different
 
 ```php
 $client->get_episode_images($episode_id);
