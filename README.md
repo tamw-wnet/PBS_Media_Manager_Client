@@ -156,7 +156,7 @@ Here's an example of combining args -- all assets updated since March 6 at 6:35p
 $client->get_changelog( array('since' => '2017-03-06T06:35:36.001Z', 'type' => 'asset', 'action' => 'update'));
 ```
 
-#### looking up an asset by TP Media Id
+#### Look up an asset by TP Media Id
 
 ```php
 $client->get_asset_by_tp_media_id($tp_media_id)
