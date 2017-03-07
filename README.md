@@ -170,8 +170,8 @@ returns the asset object.
 * Version .01 ALPHA -- connects to API, provides basic read, list, update, create, and delete functionality.
 
 ## Authors
-William Tam, WNET/IEG
-Augustus Mayo, TPT
+* William Tam, WNET/IEG
+* Augustus Mayo, TPT
 
 ## Licence
 The PBS Media Manager Client is licensed under the GPL v2 or later.
