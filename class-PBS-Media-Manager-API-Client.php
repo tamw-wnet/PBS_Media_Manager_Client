@@ -240,9 +240,9 @@ class PBS_Media_Manager_API_Client {
 
 
   /* helper function for cleaning up arguments */
-  public function validate_asset_type_list($asset_type_list, $container_type = 'episodes') {
+  public function validate_asset_type_list($asset_type_list, $container_type = 'episode') {
     $valid_asset_types = $this->asset_types;
-    if ($container_type == 'episodes' || $container_type == 'specials') {
+    if ($container_type == 'episode' || $container_type == 'special') {
       $valid_asset_types = $this->episode_asset_types;
     }
     if ($asset_type_list == 'all') {
