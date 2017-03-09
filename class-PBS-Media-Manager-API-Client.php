@@ -175,17 +175,24 @@ class PBS_Media_Manager_API_Client {
 
 
   /* main constructor for lists */
-  public function get_list_data($endpoint, $args = array()) {
-    /* Only return the actual data, stripping meta and pagination data
-     * by default, return all results, but if a value is given for page
-     * only that page number will be returned */
+  public function get_list_data($endpoint, $args = array(), $include_metadata = false) {
+    /* By default only return the actual data, stripping meta and pagination
+     * data including all results. If a value is given for page
+     * only return page number. If include_metadata is true, return fields from
+     * the first page of results.
+     */
     $result_data = array();
+    $meta_data = array();
+    $limit_pages = false;
     $page = 1;
     if (empty($args['page'])) {
       /* if we get no specific page
        * start with page 1 and keep going.  */
       $args['page'] = $page;
+    } else {
+      $limit_pages = true;
     }
+
     while ($page) {
       $querystring = !empty($args) ? "?" . http_build_query($args) : "";
       // PBS's endpoints don't like colons to be encoded
@@ -198,13 +205,28 @@ class PBS_Media_Manager_API_Client {
       foreach ($this_set as $entry) {
         $result_data[] = $entry;
       }
-      if (!empty($rawdata['links']['next'])) {
+
+      if ($include_metadata && empty($meta_data)) {
+        $meta_data = array(
+          'links' => $rawdata['links'],
+          'meta' => $rawdata['meta'],
+          'jsonapi' => $rawdata['jsonapi'],
+        );
+      }
+
+      if (!empty($rawdata['links']['next']) && !$limit_pages) {
         $page++;
         $args['page'] = $page;
       } else {
         $page = 0;
       }
     }
+
+    if ($include_metadata) {
+      $meta_data['data'] = $result_data;
+      return $meta_data;
+    }
+
     return $result_data;
   }
 
