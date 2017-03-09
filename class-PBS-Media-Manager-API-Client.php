@@ -446,4 +446,3 @@ class PBS_Media_Manager_API_Client {
   }
 
 }
-?>
