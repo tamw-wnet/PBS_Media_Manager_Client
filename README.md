@@ -68,6 +68,10 @@ $client->get_season_assets($season_id, $asset_type='all', $window='all');
 $client->get_franchise_assets($franchise_id, $asset_type='all', $window='all');
 ```
 
+get_episode_assets() etc returns the list of assets on success, or false if none are returned.  
+If there's an error with the request (such as a bad episode_id, some server problem, or a bad parameter), an 'errors' array is returned.
+
+
 ##### Getting images is a little different
 
 ```php
