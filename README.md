@@ -184,6 +184,7 @@ returns the asset object.
 ## Authors
 * William Tam, WNET/IEG
 * Augustus Mayo, TPT
+* Aaron Crosman, Cyberwoven
 
 ## Licence
 The PBS Media Manager Client is licensed under the GPL v2 or later.
