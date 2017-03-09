@@ -1,4 +1,4 @@
-<?php 
+<?php
 /* PBS Media Manager API Client
  * Author: William Tam (tamw@wnet.org)
  * version 0.1 2017-02-17
@@ -61,16 +61,16 @@ class PBS_Media_Manager_API_Client {
       return array('errors' => array('info' => $info, 'response' => $result));
     }
     if ($info['http_code'] != 200) {
-      return array('errors' => array('info' => $info, 'response' => $json)); 
-    } 
+      return array('errors' => array('info' => $info, 'response' => $json));
+    }
     return $json;
   }
 
 
-  /* main constructor for creating elements 
+  /* main constructor for creating elements
    * asset, episode, special, collection, season */
   public function create_child($parent_id, $parent_type, $type, $attribs = array()) {
-    /* on success returns the url path of the editable asset 
+    /* on success returns the url path of the editable asset
      * note that $parent_id can also be a slug */
     $endpoint = "/" . $parent_type . "s/" . $parent_id . "/" . $type . "s/";
     $data = array(
@@ -95,9 +95,9 @@ class PBS_Media_Manager_API_Client {
     if ($info['http_code'] != 201) {
       return array('errors' => array('errors' => $errors, 'result' => $result));
     }
-    /* successful request will return a 201 and the location of the created object 
+    /* successful request will return a 201 and the location of the created object
      * we'll follow that location and parse the resulting JSON to return the cid */
-    // get just the URI 
+    // get just the URI
     preg_match("/(Location|URI): .*?\/([a-f0-9\-]+)\/(edit\/)?(\r|\n|\r\n)/", $result, $matches);
 
     // TODO: Unsafe indexing, how should errors be handled?
@@ -127,7 +127,7 @@ class PBS_Media_Manager_API_Client {
       )
     );
     $payload_json = json_encode($data);
-    $request_url = $this->base_endpoint . $endpoint; 
+    $request_url = $this->base_endpoint . $endpoint;
     $ch = $this->build_curl_handle($request_url);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload_json);
@@ -161,7 +161,7 @@ class PBS_Media_Manager_API_Client {
 
 
 
-  /* main constructor for getting single items 
+  /* main constructor for getting single items
    * asset, episode, special, collection, season, show, franchise, station */
   public function get_item_of_type($id, $type, $private=false) {
     /* note that $id can also be a slug */
@@ -171,21 +171,28 @@ class PBS_Media_Manager_API_Client {
        $query = $this->_get_update_endpoint($id, $type);
     }
     return $this->get_request($query);
-  }  
+  }
 
 
   /* main constructor for lists */
-  public function get_list_data($endpoint, $args = array()) {
-    /* Only return the actual data, stripping meta and pagination data
-     * by default, return all results, but if a value is given for page
-     * only that page number will be returned */
+  public function get_list_data($endpoint, $args = array(), $include_metadata = false) {
+    /* By default only return the actual data, stripping meta and pagination
+     * data including all results. If a value is given for page
+     * only return page number. If include_metadata is true, return fields from
+     * the first page of results.
+     */
     $result_data = array();
+    $meta_data = array();
+    $limit_pages = false;
     $page = 1;
     if (empty($args['page'])) {
-      /* if we get no specific page 
+      /* if we get no specific page
        * start with page 1 and keep going.  */
-      $args['page'] = $page; 
+      $args['page'] = $page;
+    } else {
+      $limit_pages = true;
     }
+
     while ($page) {
       $querystring = !empty($args) ? "?" . http_build_query($args) : "";
       // PBS's endpoints don't like colons to be encoded
@@ -198,13 +205,28 @@ class PBS_Media_Manager_API_Client {
       foreach ($this_set as $entry) {
         $result_data[] = $entry;
       }
-      if (!empty($rawdata['links']['next'])) {
+
+      if ($include_metadata && empty($meta_data)) {
+        $meta_data = array(
+          'links' => $rawdata['links'],
+          'meta' => $rawdata['meta'],
+          'jsonapi' => $rawdata['jsonapi'],
+        );
+      }
+
+      if (!empty($rawdata['links']['next']) && !$limit_pages) {
         $page++;
         $args['page'] = $page;
       } else {
         $page = 0;
       }
     }
+
+    if ($include_metadata) {
+      $meta_data['data'] = $result_data;
+      return $meta_data;
+    }
+
     return $result_data;
   }
 
@@ -306,7 +328,7 @@ class PBS_Media_Manager_API_Client {
       $timezone = new DateTimeZone('UTC');
       $datetime = new DateTime("-24 hour", $timezone );
       $since = $datetime->format('Y-m-d\TH:i:s.u\Z');
-      $args['since'] = $since; 
+      $args['since'] = $since;
     }
     $query = "/changelog/";
     return $this->get_list_data($query, $args);
@@ -356,8 +378,8 @@ class PBS_Media_Manager_API_Client {
 
   /* shortcut functions for lists */
 
-  /* special cases -- get franchises and shows.  
-   * Franchises have no parent object, and shows do not 
+  /* special cases -- get franchises and shows.
+   * Franchises have no parent object, and shows do not
    * have to have a parent object  */
 
   public function get_franchises($queryargs=array()) {
@@ -374,7 +396,7 @@ class PBS_Media_Manager_API_Client {
 
   public function get_franchise_shows($franchise_id, $queryargs=array()) {
     return $this->get_child_items_of_type($franchise_id, 'franchise', 'show', $queryargs);
-  } 
+  }
 
   public function get_show_seasons($show_id, $queryargs=array()) {
     return $this->get_child_items_of_type($show_id, 'show', 'season', $queryargs);
@@ -389,9 +411,9 @@ class PBS_Media_Manager_API_Client {
   }
 
 
-  /* shortcuts for asset lists:  Note that assets can be children of a franchise, show, season, 
-   * collection, special, or episode BUT can only be the child of one of them -- 
-   * if an asset is a child of an episode it is not a child of a show.  
+  /* shortcuts for asset lists:  Note that assets can be children of a franchise, show, season,
+   * collection, special, or episode BUT can only be the child of one of them --
+   * if an asset is a child of an episode it is not a child of a show.
    * These methods also allow filtering by asset_type and window */
 
   public function get_episode_assets($episode_id, $asset_type='all', $window='all', $queryargs=array()) {
@@ -446,4 +468,3 @@ class PBS_Media_Manager_API_Client {
   }
 
 }
-?>
