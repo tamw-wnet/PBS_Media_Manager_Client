@@ -268,7 +268,7 @@ class PBS_Media_Manager_API_Client {
       $requested_windows = explode(',', $window);
       foreach ($requested_windows as $req_window) {
         if (!in_array($req_window, $windows)) {
-          return false;
+          return array('errors' => 'invalid window');
         }
       }
       $windows = $requested_windows;
@@ -276,7 +276,14 @@ class PBS_Media_Manager_API_Client {
 
     $result_data = array();
     $raw_result = $this->get_child_items_of_type($parent_id, $parent_type, 'asset', $queryargs);
+    if (!empty($raw_result['errors'])) {
+      return $raw_result;
+    }
     foreach ($raw_result as $result) {
+      // ignore non-list data
+      if (empty($result['attributes'])) {
+        continue;
+      }
       // only include the right asset_types
       if (!in_array($result['attributes']['object_type'], $asset_types)) {
         continue;
@@ -289,6 +296,7 @@ class PBS_Media_Manager_API_Client {
       */
       $result_data[] = $result;
     }
+    $result_data = empty($result_data) ? false : $result_data;
     return $result_data;
   }
 
