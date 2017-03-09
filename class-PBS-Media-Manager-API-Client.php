@@ -322,11 +322,11 @@ class PBS_Media_Manager_API_Client {
   }
 
   public function get_episode($id, $private=false) {
-    return $this->get_item_of_type($id, 'episode');
+    return $this->get_item_of_type($id, 'episode', $private);
   }
 
   public function get_special($id, $private=false) {
-    return $this->get_item_of_type($id, 'special');
+    return $this->get_item_of_type($id, 'special', $private);
   }
 
   public function get_collection($id) {
