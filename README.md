@@ -136,6 +136,14 @@ $attributes = array(
 
 The update method either returns TRUE (aka '1') on success or an 'errors' array.
 
+In order to update an asset's video, caption, or image, any existing video/caption/image has to be deleted.  Here's a helper method:
+
+```php
+$client->delete_file_from_asset($asset_id, $type='video');
+```
+
+This is a wrapper for the update_object method.  It submits a NULL payload for the video/caption/image, which is how files are deleted in the API.  It returns true or an errors array.
+
 There will be helper methods TK specifically for handling video, image, and caption file additions.   These file additions have additional logic required.
 
 
