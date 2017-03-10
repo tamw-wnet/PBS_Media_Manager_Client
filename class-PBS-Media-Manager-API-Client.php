@@ -13,6 +13,7 @@ class PBS_Media_Manager_API_Client {
   public  $asset_types;
   public  $episode_asset_types;
   public  $video_profiles;
+  public  $file_types;
 
   public function __construct($client_id = '', $client_secret = '', $base_endpoint =''){
     $this->client_id = $client_id;
@@ -26,6 +27,7 @@ class PBS_Media_Manager_API_Client {
     $this->asset_types = array('preview', 'clip', 'extra');
     $this->episode_asset_types = array('preview', 'clip', 'extra', 'full_length');
     $this->video_profiles = array('hd-1080p-mezzanine-16x9', 'hd-1080p-mezzanine-4x3', 'hd-mezzanine-16x9', 'hd-mezzanine-4x3');
+    $this->file_types = array('video', 'caption'); // 'image' will be added when the api can handle it properly
   }
 
 
@@ -474,5 +476,22 @@ class PBS_Media_Manager_API_Client {
   public function get_asset_images($asset_id) {
     return $this->get_images($asset_id, 'asset');
   }
+
+  /* file ingest helpers */
+
+  public function delete_file_from_asset($asset_id, $type='video') {
+    /* deleting a file from an asset is just submitting a null value for it */
+    if (empty($asset_id)) {
+      return array('errors' => 'no asset id');
+    }
+    if (! in_array($type, $this->file_types)) {
+      return array('errors' => 'invalid file type');
+    }
+    $attribs = array(
+      $type => null
+    );
+    return $this->update_object($asset_id, 'asset', $attribs);
+  }
+
 
 }
