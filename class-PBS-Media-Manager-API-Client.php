@@ -94,10 +94,10 @@ class PBS_Media_Manager_API_Client {
     $info = curl_getinfo($ch);
     $errors = curl_error($ch);
     curl_close ($ch);
-    if ($info['http_code'] != 201) {
+    if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
       return array('errors' => array('errors' => $errors, 'result' => $result));
     }
-    /* successful request will return a 201 and the location of the created object
+    /* successful request will return a 20x and the location of the created object
      * we'll follow that location and parse the resulting JSON to return the cid */
     // get just the URI
     preg_match("/(Location|URI): .*?\/([a-f0-9\-]+)\/(edit\/)?(\r|\n|\r\n)/", $result, $matches);
@@ -138,10 +138,10 @@ class PBS_Media_Manager_API_Client {
     $info = curl_getinfo($ch);
     $errors = curl_error($ch);
     curl_close ($ch);
-    if ($info['http_code'] != 200) {
+    if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
       return array('errors' => array('info' => $info, 'errors' => $errors, 'result' => $result));
     }
-    /* successful request will return a 200 and nothing else */
+    /* successful request will return a 20x and nothing else */
     return TRUE;
   }
 
@@ -154,10 +154,10 @@ class PBS_Media_Manager_API_Client {
     $info = curl_getinfo($ch);
     $errors = curl_error($ch);
     curl_close ($ch);
-    if ($info['http_code'] != 200) {
+    if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
       return array('errors' => array('info' => $info, 'errors' => $errors, 'result' => $result));
     }
-    /* successful request will return a 200 and nothing else */
+    /* successful request will return a 20x and nothing else */
     return TRUE;
   }
 
