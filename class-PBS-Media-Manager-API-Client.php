@@ -318,7 +318,15 @@ class PBS_Media_Manager_API_Client {
     /* Returns the corresponding asset if it exists.  Note that they're
      * calling it tp_media_id, NOT tp_media_object_id */
     $query = "/assets/legacy/?tp_media_id=" . $tp_media_id;
-    return $this->get_request($query);
+    $response = $this->get_request($query);
+    if (!empty($response["errors"]["info"]["http_code"]) && $response["errors"]["info"]["http_code"] == 404) {
+      // if this video is private/unpublished, retry the edit endpoint
+      preg_match("/.*?(\/assets\/.*)\/$/", $response["errors"]["info"]["url"], $output_array);
+      if (!empty($output_array[1])){
+        $response = $this->get_request($output_array[1] . "/edit/");
+      }
+    }
+    return $response;
   }
 
   public function get_show_by_program_id($program_id) {
