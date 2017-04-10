@@ -196,7 +196,7 @@ returns the asset object.
 
 
 ## Changelog
-
+* Version 1.0 STABLE -- refined results, documentation in place, can perform all core functions that the API provides.
 * Version .01 ALPHA -- connects to API, provides basic read, list, update, create, and delete functionality.
 
 ## Authors

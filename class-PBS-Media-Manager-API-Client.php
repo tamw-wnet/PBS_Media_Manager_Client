@@ -1,7 +1,7 @@
 <?php
 /* PBS Media Manager API Client
- * Author: William Tam (tamw@wnet.org)
- * version 0.1 2017-02-17
+ * Authors: William Tam (tamw@wnet.org), Augustus Mayo (amayo@tpt.org), Aaron Crosman (aaron.crosman@cyberwoven.com)
+ * version 1.0 2017-04-10
 */
 class PBS_Media_Manager_API_Client {
   private $client_id;
