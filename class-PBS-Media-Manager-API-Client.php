@@ -107,7 +107,11 @@ class PBS_Media_Manager_API_Client {
   }
 
   private function _get_update_endpoint($id, $type) {
-    return $endpoint = "/" . $type . "s/" . $id . "/edit/";
+    $endpoint = "/" . $type . "s/" . $id . "/";
+    if ($type == 'asset') {
+      $endpoint .= "edit/";
+    }
+    return $endpoint;
   }
 
   public function get_updatable_object($id, $type) {
