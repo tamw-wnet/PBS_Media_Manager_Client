@@ -1,7 +1,7 @@
 <?php
 /* PBS Media Manager API Client
- * Author: William Tam (tamw@wnet.org)
- * version 0.1 2017-02-17
+ * Authors: William Tam (tamw@wnet.org), Augustus Mayo (amayo@tpt.org), Aaron Crosman (aaron.crosman@cyberwoven.com)
+ * version 1.0 2017-04-10
 */
 class PBS_Media_Manager_API_Client {
   private $client_id;
@@ -13,6 +13,7 @@ class PBS_Media_Manager_API_Client {
   public  $asset_types;
   public  $episode_asset_types;
   public  $video_profiles;
+  public  $file_types;
 
   public function __construct($client_id = '', $client_secret = '', $base_endpoint =''){
     $this->client_id = $client_id;
@@ -26,6 +27,7 @@ class PBS_Media_Manager_API_Client {
     $this->asset_types = array('preview', 'clip', 'extra');
     $this->episode_asset_types = array('preview', 'clip', 'extra', 'full_length');
     $this->video_profiles = array('hd-1080p-mezzanine-16x9', 'hd-1080p-mezzanine-4x3', 'hd-mezzanine-16x9', 'hd-mezzanine-4x3');
+    $this->file_types = array('video', 'caption'); // 'image' will be added when the api can handle it properly
   }
 
 
@@ -81,7 +83,7 @@ class PBS_Media_Manager_API_Client {
     );
     /* in the MM API, create is a POST */
     $return = array();
-    $payload_json = json_encode($data);
+    $payload_json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     $request_url = $this->base_endpoint . $endpoint;
     $ch = $this->build_curl_handle($request_url);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
@@ -92,10 +94,10 @@ class PBS_Media_Manager_API_Client {
     $info = curl_getinfo($ch);
     $errors = curl_error($ch);
     curl_close ($ch);
-    if ($info['http_code'] != 201) {
+    if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
       return array('errors' => array('errors' => $errors, 'result' => $result));
     }
-    /* successful request will return a 201 and the location of the created object
+    /* successful request will return a 20x and the location of the created object
      * we'll follow that location and parse the resulting JSON to return the cid */
     // get just the URI
     preg_match("/(Location|URI): .*?\/([a-f0-9\-]+)\/(edit\/)?(\r|\n|\r\n)/", $result, $matches);
@@ -105,7 +107,11 @@ class PBS_Media_Manager_API_Client {
   }
 
   private function _get_update_endpoint($id, $type) {
-    return $endpoint = "/" . $type . "s/" . $id . "/edit/";
+    $endpoint = "/" . $type . "s/" . $id . "/";
+    if ($type == 'asset') {
+      $endpoint .= "edit/";
+    }
+    return $endpoint;
   }
 
   public function get_updatable_object($id, $type) {
@@ -126,7 +132,7 @@ class PBS_Media_Manager_API_Client {
         "attributes" => $attribs
       )
     );
-    $payload_json = json_encode($data);
+    $payload_json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     $request_url = $this->base_endpoint . $endpoint;
     $ch = $this->build_curl_handle($request_url);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
@@ -136,10 +142,10 @@ class PBS_Media_Manager_API_Client {
     $info = curl_getinfo($ch);
     $errors = curl_error($ch);
     curl_close ($ch);
-    if ($info['http_code'] != 200) {
+    if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
       return array('errors' => array('info' => $info, 'errors' => $errors, 'result' => $result));
     }
-    /* successful request will return a 200 and nothing else */
+    /* successful request will return a 20x and nothing else */
     return TRUE;
   }
 
@@ -152,10 +158,10 @@ class PBS_Media_Manager_API_Client {
     $info = curl_getinfo($ch);
     $errors = curl_error($ch);
     curl_close ($ch);
-    if ($info['http_code'] != 200) {
+    if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
       return array('errors' => array('info' => $info, 'errors' => $errors, 'result' => $result));
     }
-    /* successful request will return a 200 and nothing else */
+    /* successful request will return a 20x and nothing else */
     return TRUE;
   }
 
@@ -316,7 +322,15 @@ class PBS_Media_Manager_API_Client {
     /* Returns the corresponding asset if it exists.  Note that they're
      * calling it tp_media_id, NOT tp_media_object_id */
     $query = "/assets/legacy/?tp_media_id=" . $tp_media_id;
-    return $this->get_request($query);
+    $response = $this->get_request($query);
+    if (!empty($response["errors"]["info"]["http_code"]) && $response["errors"]["info"]["http_code"] == 404) {
+      // if this video is private/unpublished, retry the edit endpoint
+      preg_match("/.*?(\/assets\/.*)\/$/", $response["errors"]["info"]["url"], $output_array);
+      if (!empty($output_array[1])){
+        $response = $this->get_request($output_array[1] . "/edit/");
+      }
+    }
+    return $response;
   }
 
   public function get_show_by_program_id($program_id) {
@@ -474,5 +488,22 @@ class PBS_Media_Manager_API_Client {
   public function get_asset_images($asset_id) {
     return $this->get_images($asset_id, 'asset');
   }
+
+  /* file ingest helpers */
+
+  public function delete_file_from_asset($asset_id, $type='video') {
+    /* deleting a file from an asset is just submitting a null value for it */
+    if (empty($asset_id)) {
+      return array('errors' => 'no asset id');
+    }
+    if (! in_array($type, $this->file_types)) {
+      return array('errors' => 'invalid file type');
+    }
+    $attribs = array(
+      $type => null
+    );
+    return $this->update_object($asset_id, 'asset', $attribs);
+  }
+
 
 }

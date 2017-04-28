@@ -1,6 +1,8 @@
 # PBS Media Manager Client
 PHP class that provides a client for the PBS Media Manager API
 
+## Requirements
+The client requires at least PHP version 5.6, and the cURL library <http://php.net/manual/en/book.curl.php>
 
 ## Usage
 Invoke the client as so:
@@ -89,7 +91,7 @@ $client->create_child($cid, $parent_type, $child_type, $attributes);
 args are
 * $cid (of the parent)
 * $parent_type can be 'episode', 'special', 'season', 'show'
-* $child_type can be 'asset', 'episode', 'special', 'season'
+* $child_type can be 'asset', 'episode', or 'special'
 * $attributes is an array, matching the required/optional attributes for the child.  For instance an asset might have
 
 ```php
@@ -106,6 +108,8 @@ $attributes = array(
 
 The method returns either the CID of the created object, or an 'errors' array.
 
+For more details on arguments for create arrays see the PBS documentation at <https://docs.pbs.org/display/CDA/Create>
+
 There will be shortcut methods TK like 'create_episode_asset' etc.
 
 
@@ -120,7 +124,7 @@ $client->update_object($cid, $object_type, $attributes);
 
 args are
 * $cid of the object 
-* $object_type can be 'asset', 'episode', 'special', 'season'
+* $object_type can be 'asset'.   For the moment, PBS doesn't support updating 'episode' or 'special' but they say they're coming.  'season', 'show', etc aren't on the roadmap.
 * $attributes is an array, matching the required/optional attributes for the object.  For instance an asset might have
 ```php
 $attributes = array(
@@ -135,6 +139,16 @@ $attributes = array(
 ```
 
 The update method either returns TRUE (aka '1') on success or an 'errors' array.
+
+For more examples formatting update arrays, see the PBS API documentation at <https://docs.pbs.org/display/CDA/Update#Update-update>
+
+In order to update an asset's video, caption, or image, any existing video/caption/image has to be deleted.  Here's a helper method:
+
+```php
+$client->delete_file_from_asset($asset_id, $type='video');
+```
+
+This is a wrapper for the update_object method.  It submits a NULL payload for the video/caption/image, which is how files are deleted in the API.  It returns true or an errors array.
 
 There will be helper methods TK specifically for handling video, image, and caption file additions.   These file additions have additional logic required.
 
@@ -182,7 +196,7 @@ returns the asset object.
 
 
 ## Changelog
-
+* Version 1.0 STABLE -- refined results, documentation in place, can perform all core functions that the API provides.
 * Version .01 ALPHA -- connects to API, provides basic read, list, update, create, and delete functionality.
 
 ## Authors
