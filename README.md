@@ -124,7 +124,7 @@ $client->update_object($cid, $object_type, $attributes);
 
 args are
 * $cid of the object 
-* $object_type can be 'asset'.   For the moment, PBS doesn't support updating 'episode' or 'special' but they say they're coming.  'season', 'show', etc aren't on the roadmap.
+* $object_type can be 'asset', 'episode', or 'special'.   For the moment, PBS doesn't support 'season', 'show', etc.
 * $attributes is an array, matching the required/optional attributes for the object.  For instance an asset might have
 ```php
 $attributes = array(
