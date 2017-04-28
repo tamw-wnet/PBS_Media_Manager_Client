@@ -1,8 +1,8 @@
 # PBS Media Manager Client
-PHP class that provides a client for the PBS Media Manager API
+PHP class that provides a client for the PBS Media Manager API.  Full documentation for that API is at <https://docs.pbs.org/display/CDA/Media+Manager+API>.
 
 ## Requirements
-The client requires at least PHP version 5.6, and the cURL library <http://php.net/manual/en/book.curl.php>
+The client requires at least PHP version 5.6, and the cURL library <http://php.net/manual/en/book.curl.php>.
 
 ## Usage
 Invoke the client as so:
