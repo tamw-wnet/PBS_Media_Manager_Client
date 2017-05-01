@@ -43,6 +43,9 @@ function assign_extras_to_episodes($show_id, $client) {
   $curr_year_id = '';
   $curr_episodes = false;
   $extras = $client->get_show_assets($show_id, 'all', 'all', array('sort' => 'encored_on'));
+  if (empty($extras)) {
+    return;
+  }
   foreach ($extras as $asset) {
     $thisdate = $asset['attributes']['premiered_on'];
     $date = explode('-', $thisdate); // date is formatted yyyy-mm-dd
