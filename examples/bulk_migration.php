@@ -144,7 +144,9 @@ function convert_specials_to_episodes($show_id, $client) {
     $episode = $client->update_object($special['id'], 'episode', array("ordinal" => ($count * 10)) );
     if (!empty($episode['errors'])) {
       print_r($episode['errors']);
-      die();
+      //die();
+      // this will sometimes fail if the encore date is significantly after the premiere date
+      // it'll get confused about where the ordinal is
     }
   }
 }
