@@ -42,15 +42,30 @@ function assign_extras_to_episodes($show_id, $client) {
   $curr_year = false;
   $curr_year_id = '';
   $curr_episodes = false;
-  $extras = $client->get_show_assets($show_id, 'all', 'all', array('sort' => 'encored_on'));
+  $count = 1;
+  $extras = array();
+    while ($raw_extras = $client->get_show_assets($show_id, 'all', 'all', array('sort' => 'encored_on', 'page' => $count))) {
+      // load up the entire list into a single array of ids and titles, because paging will change as they're processed
+      if (empty($raw_extras[0])) {
+        break;
+      }
+      foreach ($raw_extras as $asset) {
+        $extras[] = array('id' => $asset['id'], 'title' => $asset['attributes']['title'], 'premiered_on' => $asset['attributes']['premiered_on']);
+      }
+      echo count($extras) . " ";
+      $count++;
+    }
+
   if (empty($extras)) {
     return;
   }
+  echo " extras found.\n"; 
   foreach ($extras as $asset) {
-    $thisdate = $asset['attributes']['premiered_on'];
+    $thisdate = $asset['premiered_on'];
     $date = explode('-', $thisdate); // date is formatted yyyy-mm-dd
     $year  = $date[0];
     if ($year != $curr_year) {
+      echo 'getting season ' . $year . "\n";
       // get a new seasons worth of episodes to select from
       $year_id = get_season_by_ordinal($year, $show_id, $client);
       if (!$year_id || !empty($year_id['errors'])) {
@@ -69,25 +84,39 @@ function assign_extras_to_episodes($show_id, $client) {
         $this_ep_date = $episode['attributes']['premiered_on']; 
         $this_ep_id = $episode['id'];
         if (!empty($curr_episodes[$this_ep_date])) {
-          echo 'duplicate episode for ' . $this_ep_date . ' ' . $episode['attributes']['title'] . "\n";
+          echo 'duplicate episode for ' . $this_ep_date . ': ' . $curr_episodes[$this_ep_date]['title'] . ' :  ' . $episode['attributes']['title'] . "\n";
         } else {
-          $curr_episodes[$this_ep_date] = $this_ep_id;
+          $curr_episodes[$this_ep_date] = array('id' => $this_ep_id, 'title' => $episode['attributes']['title']);
         }
       }
-    }
+    } 
     if (empty($curr_episodes[$thisdate])) {
-      echo 'no episode found for ' . $thisdate . " " . $asset['attributes']['title'] . "\n";
+      echo 'no episode found for ' . $thisdate . " " . $asset['title'] . "\n";
     } else {
-      $asset = $client->update_object($asset['id'], 'asset', array("episode" => $curr_episodes[$thisdate]) );
+      $response = $client->update_object($asset['id'], 'asset', array("episode" => $curr_episodes[$thisdate]['id']) );
       
-      if (!empty($asset['errors'])) {
-        print_r($asset['errors']);
-        die();
+      if (!empty($response['errors'])) {
+        print_r($response['errors']);
+        // try again
+        echo "\n Retrying " . $asset['title'] . "\n";
+        $response = $client->update_object($asset['id'], 'asset', array("episode" => $curr_episodes[$thisdate]['id']) );
+        if (!empty($response['errors'])) {
+          die();
+        }
       }
- 
+      unset($response);
+      // give the PBS server a second to catch its breath
+      sleep(1);
+      
     }
   }
+
 }
+
+
+
+
+
 
 function convert_specials_to_episodes($show_id, $client) {
   /* this function uses the client object to retrieve the list of 'specials' that are
@@ -109,6 +138,7 @@ function convert_specials_to_episodes($show_id, $client) {
    *
    * This function should only be run ONCE on any show. */
 
+  // note that if the script gets interrupted you should set count/curr_year/curr_year_id to the 'current' values to start up again
   $count = 0;
   $curr_year = '';
   $curr_year_id = '';
@@ -141,6 +171,8 @@ function convert_specials_to_episodes($show_id, $client) {
     }
     $count++;
     // update the episode to have a multiple of their current ordinal
+    // give the PBS server a second to catch its breath 
+    sleep(1);
     $episode = $client->update_object($special['id'], 'episode', array("ordinal" => ($count * 10)) );
     if (!empty($episode['errors'])) {
       print_r($episode['errors']);
