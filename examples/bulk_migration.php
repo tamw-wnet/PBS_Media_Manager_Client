@@ -44,17 +44,17 @@ function assign_extras_to_episodes($show_id, $client) {
   $curr_episodes = false;
   $count = 1;
   $extras = array();
-    while ($raw_extras = $client->get_show_assets($show_id, 'all', 'all', array('sort' => 'encored_on', 'page' => $count))) {
-      // load up the entire list into a single array of ids and titles, because paging will change as they're processed
-      if (empty($raw_extras[0])) {
-        break;
-      }
-      foreach ($raw_extras as $asset) {
-        $extras[] = array('id' => $asset['id'], 'title' => $asset['attributes']['title'], 'premiered_on' => $asset['attributes']['premiered_on']);
-      }
-      echo count($extras) . " ";
-      $count++;
+  while ($raw_extras = $client->get_show_assets($show_id, 'all', 'all', array('sort' => 'premiered_on', 'page' => $count))) {
+    // load up the entire list into a single array of ids and titles, because paging will change as they're processed
+    if (empty($raw_extras[0])) {
+      break;
     }
+    foreach ($raw_extras as $asset) {
+      $extras[] = array('id' => $asset['id'], 'title' => $asset['attributes']['title'], 'premiered_on' => $asset['attributes']['premiered_on']);
+    }
+    echo count($extras) . " ";
+    $count++;
+  }
 
   if (empty($extras)) {
     return;
@@ -128,7 +128,7 @@ function convert_specials_to_episodes($show_id, $client) {
    * The function assumes year-based seasons.
    * If no matching season is found, the season is created.
    *
-   * The function processes the specials from oldest encored_on date to newest.
+   * The function processes the specials from oldest premiered_on date to newest.
    * It assigns the episode an ordinal of which number the special was found in that year's list * 10.
    * This 'times 10' results in ordinals of 10, 20, 30 etc and allows for easier later re-arrangement 
    * of episodes as needed.
@@ -142,7 +142,7 @@ function convert_specials_to_episodes($show_id, $client) {
   $count = 0;
   $curr_year = '';
   $curr_year_id = '';
-  $specials = $client->get_show_specials($show_id, array('sort' => 'encored_on'));
+  $specials = $client->get_show_specials($show_id, array('sort' => 'premiered_on'));
   foreach ($specials as $special) {
     echo $special['attributes']['premiered_on'] . " " .  $special['attributes']['title'] . " " . $special['id'] . "\n";
     $thisdate = $special['attributes']['premiered_on']; 
