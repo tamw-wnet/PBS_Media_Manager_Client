@@ -93,8 +93,9 @@ function assign_extras_to_episodes($show_id, $client) {
     if (empty($curr_episodes[$thisdate])) {
       echo 'no episode found for ' . $thisdate . " " . $asset['title'] . "\n";
     } else {
+      echo "assigning " . $asset['title'] . " to " .$thisdate. "\n";
       $response = $client->update_object($asset['id'], 'asset', array("episode" => $curr_episodes[$thisdate]['id']) );
-      
+       
       if (!empty($response['errors'])) {
         print_r($response['errors']);
         // try again
@@ -114,6 +115,68 @@ function assign_extras_to_episodes($show_id, $client) {
 }
 
 
+function assign_extras_to_episodes_by_season($show_id, $client) {
+  /* this function uses the client object to retrieve the list of 'extras' that are
+   * assigned to the seasons of a show_id  -- assets that are assigned to individual 
+   * seasons for that show --
+   * and attempts to assign it to an episode with the same premiered_on value.
+   *
+   * The function assumes year-based seasons.
+   *
+   * If no matching episode or year is found, the function echos a notice.
+   *
+   * Because the function only looks at 'unassigned' assets, it can be
+   * run multiple times on the same 'show' as episodes are created to re-attempt the match.  */
+  $seasons = $client->get_show_seasons($show_id);
+  if (empty($seasons[0])) {
+    return;
+  }
+  foreach ($seasons as $season) {
+    echo "\n starting season " . $season["attributes"]["ordinal"] ."\n";
+    $season_id = $season['id'];
+    $extras = array();
+    $raw_extras = $client->get_season_assets($season_id, 'all', 'all', array('sort' => 'premiered_on')); 
+    if (empty($raw_extras[0])) {
+      continue;
+    }
+    foreach ($raw_extras as $asset) {
+      $extras[] = array('id' => $asset['id'], 'title' => $asset['attributes']['title'], 'premiered_on' => $asset['attributes']['premiered_on']);
+    }
+    $raw_season = $client->get_season_episodes($season_id);
+    $curr_episodes = array();
+    foreach ($raw_season as $episode) {
+      $this_ep_date = $episode['attributes']['premiered_on'];
+      $this_ep_id = $episode['id'];
+      if (!empty($curr_episodes[$this_ep_date])) {
+        echo 'duplicate episode for ' . $this_ep_date . ': ' . $curr_episodes[$this_ep_date]['title'] . ' :  ' . $episode['attributes']['title'] . "\n";
+      } else {
+        $curr_episodes[$this_ep_date] = array('id' => $this_ep_id, 'title' => $episode['attributes']['title']);
+      }
+    }
+    foreach ($extras as $asset) {
+      $thisdate = $asset['premiered_on'];
+      if (empty($curr_episodes[$thisdate])) {
+        echo 'no episode found for ' . $thisdate . " " . $asset['title'] . "\n";
+        continue;
+      }
+      echo "assigning " . $asset['title'] . " to " .$thisdate. "\n";
+      $response = $client->update_object($asset['id'], 'asset', array("episode" => $curr_episodes[$thisdate]['id']) );
+
+      if (!empty($response['errors'])) {
+        print_r($response['errors']);
+        // try again
+        echo "\n Retrying " . $asset['title'] . "\n";
+        $response = $client->update_object($asset['id'], 'asset', array("episode" => $curr_episodes[$thisdate]['id']) );
+        if (!empty($response['errors'])) {
+          die();
+        }
+      }
+      unset($response);
+      // give the PBS server a second to catch its breath
+      sleep(1);
+    }
+  }
+}
 
 
 
