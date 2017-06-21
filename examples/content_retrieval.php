@@ -1,7 +1,7 @@
 <?php
 /* example content retrieval functions
  *
- * The client will need to be invoked with an api_id and api_secret that have read/write access to the show in question.  
+ * The client will need to be invoked with an api_id and api_secret that has read access to the show in question.  
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
