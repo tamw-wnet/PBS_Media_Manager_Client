@@ -209,11 +209,7 @@ class PBS_Media_Manager_API_Client {
     }
 
     while ($page) {
-      $querystring = !empty($args) ? "?" . http_build_query($args) : "";
-      // PBS's endpoints don't like encoded entities.
-      $querystring = str_replace("%3A", ":", $querystring);
-      $querystring = str_replace("%3D", "=", $querystring);
-      $querystring = str_replace("%26", "&", $querystring);
+      $querystring = $this->build_pbs_querystring($args);
       $rawdata = $this->get_request($endpoint . $querystring);
       if (empty($rawdata['data'])) {
         return $rawdata;
