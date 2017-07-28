@@ -178,14 +178,18 @@ class PBS_Media_Manager_API_Client {
 
   /* main constructor for getting single items
    * asset, episode, special, collection, season, show, franchise, station */
-  public function get_item_of_type($id, $type, $private=false) {
+  public function get_item_of_type($id, $type, $private=false, $queryargs = array()) {
     /* note that $id can also be a slug */
-    $query = "/" . $type . "s/" . $id . "/";
+    $endpoint = "/" . $type . "s/" . $id . "/";
     // unpublished, 'private' items have to do a GET on the update endpoint
-    if ($private) {
-       $query = $this->_get_update_endpoint($id, $type);
+    if ($private === true) {
+       $endpoint = $this->_get_update_endpoint($id, $type);
     }
-    return $this->get_request($query);
+    if (empty($queryargs) && is_array($private)) {
+      $queryargs = $private;
+    }
+    $querystring = $this->build_pbs_querystring($queryargs);
+    return $this->get_request($endpoint . $querystring);
   }
 
 
@@ -368,40 +372,40 @@ class PBS_Media_Manager_API_Client {
 
   /* shortcut functions for single items */
 
-  public function get_asset($id, $private=false) {
-    return $this->get_item_of_type($id, 'asset', $private);
+  public function get_asset($id, $private=false, $queryargs = array()) {
+    return $this->get_item_of_type($id, 'asset', $private, $queryargs);
   }
 
-  public function get_episode($id) {
-    return $this->get_item_of_type($id, 'episode');
+  public function get_episode($id, $queryargs = array()) {
+    return $this->get_item_of_type($id, 'episode', $queryargs);
   }
 
-  public function get_special($id) {
-    return $this->get_item_of_type($id, 'special');
+  public function get_special($id, $queryargs = array()) {
+    return $this->get_item_of_type($id, 'special', $queryargs);
   }
 
-  public function get_collection($id) {
-    return $this->get_item_of_type($id, 'collection');
+  public function get_collection($id, $queryargs = array()) {
+    return $this->get_item_of_type($id, 'collection', $queryargs);
   }
 
-  public function get_season($id) {
-    return $this->get_item_of_type($id, 'season');
+  public function get_season($id, $queryargs = array()) {
+    return $this->get_item_of_type($id, 'season', $queryargs);
   }
 
-  public function get_show($id) {
-    return $this->get_item_of_type($id, 'show');
+  public function get_show($id, $queryargs = array()) {
+    return $this->get_item_of_type($id, 'show', $queryargs);
   }
 
-  public function get_remote_asset($id) {
-    return $this->get_item_of_type($id, 'remote-asset');
+  public function get_remote_asset($id, $queryargs = array()) {
+    return $this->get_item_of_type($id, 'remote-asset', $queryargs);
   }
 
-  public function get_franchise($id) {
-    return $this->get_item_of_type($id, 'franchise');
+  public function get_franchise($id, $queryargs = array()) {
+    return $this->get_item_of_type($id, 'franchise', $queryargs);
   }
 
-  public function get_station($id) {
-    return $this->get_item_of_type($id, 'station');
+  public function get_station($id, $queryargs = array()) {
+    return $this->get_item_of_type($id, 'station', $queryargs);
   }
 
 
