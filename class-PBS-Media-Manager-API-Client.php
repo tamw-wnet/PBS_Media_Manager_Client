@@ -1,7 +1,7 @@
 <?php
 /* PBS Media Manager API Client
  * Authors: William Tam (tamw@wnet.org), Augustus Mayo (amayo@tpt.org), Aaron Crosman (aaron.crosman@cyberwoven.com)
- * version 1.1.1 2017-07-28
+ * version 2.0 2017-07-28
 */
 class PBS_Media_Manager_API_Client {
   private $client_id;
@@ -367,12 +367,12 @@ class PBS_Media_Manager_API_Client {
     return $this->get_item_of_type($id, 'asset', $private);
   }
 
-  public function get_episode($id, $private=false) {
-    return $this->get_item_of_type($id, 'episode', $private);
+  public function get_episode($id) {
+    return $this->get_item_of_type($id, 'episode');
   }
 
-  public function get_special($id, $private=false) {
-    return $this->get_item_of_type($id, 'special', $private);
+  public function get_special($id) {
+    return $this->get_item_of_type($id, 'special');
   }
 
   public function get_collection($id) {
