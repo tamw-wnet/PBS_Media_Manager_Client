@@ -120,6 +120,15 @@ class PBS_Media_Manager_API_Client {
     );
   }
 
+  public function build_pbs_querystring($args) {
+    $querystring = !empty($args) ? "?" . http_build_query($args) : "";
+    // PBS's endpoints don't like encoded entities.
+    $querystring = str_replace("%3A", ":", $querystring);
+    $querystring = str_replace("%3D", "=", $querystring);
+    $querystring = str_replace("%26", "&", $querystring);
+    return $querystring;
+  }
+
   /* main constructor for updating objects
    * asset, episode, special, collection, season */
   public function update_object($id, $type, $attribs = array()) {
