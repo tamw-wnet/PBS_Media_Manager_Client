@@ -191,6 +191,12 @@ class PBS_Media_Manager_API_Client {
     $meta_data = array();
     $limit_pages = false;
     $page = 1;
+    /* NULL args are interpreted as strings, throwing errors. Force it to be
+     * an array.
+     */
+    if (empty($args)) {
+      $args = array();
+    }
     if (empty($args['page'])) {
       /* if we get no specific page
        * start with page 1 and keep going.  */
