@@ -115,10 +115,22 @@ class PBS_Media_Manager_API_Client {
     curl_close($ch);
     $json = json_decode($result, TRUE);
     if (empty($json)) {
-      return array('errors' => array('info' => $info, 'errors' => $errors, 'response' => $result));
+      return array(
+        'errors' => array(
+          'info' => $info,
+          'errors' => $errors,
+          'response' => $result,
+        ),
+      );
     }
     if ($info['http_code'] != 200) {
-      return array('errors' => array('info' => $info, 'errors' => $errors, 'response' => $json));
+      return array(
+        'errors' => array(
+          'info' => $info,
+          'errors' => $errors,
+          'response' => $json,
+        ),
+      );
     }
     return $json;
   }
@@ -162,7 +174,13 @@ class PBS_Media_Manager_API_Client {
     $errors = curl_error($ch);
     curl_close($ch);
     if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
-      return array('errors' => array('errors' => $errors, 'result' => $result));
+      return array(
+        'errors' => array(
+          'info' => $info,
+          'errors' => $errors,
+          'result' => $result,
+        ),
+      );
     }
     /*
      * A successful request will return a 20x and the location of the created
