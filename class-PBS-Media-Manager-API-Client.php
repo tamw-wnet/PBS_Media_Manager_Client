@@ -341,7 +341,7 @@ class PBS_Media_Manager_API_Client {
    *    The items.
    */
   public function get_item_of_type($id, $type, $private = FALSE, $queryargs = array()) {
-    $query = "/" . $type . "s/" . $id . "/";
+    $endpoint = "/" . $type . "s/" . $id . "/";
     // Unpublished, 'private' items have to do a GET on the update endpoint.
     if ($private === TRUE) {
       $endpoint = $this->_get_update_endpoint($id, $type);
