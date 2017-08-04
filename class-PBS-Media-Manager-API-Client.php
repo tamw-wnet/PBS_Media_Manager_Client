@@ -8,7 +8,7 @@ class PBS_Media_Manager_API_Client {
   private $client_secret;
   private $base_endpoint;
   private $auth_string;
-  public  $container_types;
+  public  $valid_endpoints;
   public  $passport_windows;
   public  $asset_types;
   public  $episode_asset_types;
