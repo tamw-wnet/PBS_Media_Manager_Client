@@ -59,10 +59,10 @@ class PBS_Media_Manager_API_Client {
     curl_close ($ch);
     $json = json_decode($result, true);
     if (empty($json)) {
-      return array('errors' => array('info' => $info, 'response' => $result));
+      return array('errors' => array('info' => $info, 'errors' => $errors, 'response' => $result));
     }
     if ($info['http_code'] != 200) {
-      return array('errors' => array('info' => $info, 'response' => $json));
+      return array('errors' => array('info' => $info, 'errors' => $errors, 'response' => $json));
     }
     return $json;
   }
