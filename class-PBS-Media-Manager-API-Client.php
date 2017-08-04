@@ -50,7 +50,6 @@ class PBS_Media_Manager_API_Client {
 
 
   public function get_request($query) {
-    $return = array();
     $request_url = $this->base_endpoint . $query;
     $ch = $this->build_curl_handle($request_url);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
@@ -82,7 +81,6 @@ class PBS_Media_Manager_API_Client {
       )
     );
     /* in the MM API, create is a POST */
-    $return = array();
     $payload_json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     $request_url = $this->base_endpoint . $endpoint;
     $ch = $this->build_curl_handle($request_url);
