@@ -12,7 +12,7 @@ class PBS_Media_Manager_API_Client {
   private $client_secret;
   private $base_endpoint;
   private $auth_string;
-  public  $container_types;
+  public  $valid_endpoints;
   public  $passport_windows;
   public  $asset_types;
   public  $episode_asset_types;
@@ -106,7 +106,6 @@ class PBS_Media_Manager_API_Client {
    *   The result from the API.
    */
   public function get_request($query) {
-    $return = array();
     $request_url = $this->base_endpoint . $query;
     $ch = $this->build_curl_handle($request_url);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
@@ -116,10 +115,22 @@ class PBS_Media_Manager_API_Client {
     curl_close($ch);
     $json = json_decode($result, TRUE);
     if (empty($json)) {
-      return array('errors' => array('info' => $info, 'response' => $result));
+      return array(
+        'errors' => array(
+          'info' => $info,
+          'errors' => $errors,
+          'response' => $result,
+        ),
+      );
     }
     if ($info['http_code'] != 200) {
-      return array('errors' => array('info' => $info, 'response' => $json));
+      return array(
+        'errors' => array(
+          'info' => $info,
+          'errors' => $errors,
+          'response' => $json,
+        ),
+      );
     }
     return $json;
   }
@@ -150,8 +161,7 @@ class PBS_Media_Manager_API_Client {
         "attributes" => $attribs,
       ),
     );
-    /* In the MM API, create is a POST. */
-    $return = array();
+    /* in the MM API, create is a POST */
     $payload_json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     $request_url = $this->base_endpoint . $endpoint;
     $ch = $this->build_curl_handle($request_url);
@@ -164,7 +174,13 @@ class PBS_Media_Manager_API_Client {
     $errors = curl_error($ch);
     curl_close($ch);
     if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
-      return array('errors' => array('errors' => $errors, 'result' => $result));
+      return array(
+        'errors' => array(
+          'info' => $info,
+          'errors' => $errors,
+          'result' => $result,
+        ),
+      );
     }
     /*
      * A successful request will return a 20x and the location of the created
