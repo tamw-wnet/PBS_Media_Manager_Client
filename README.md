@@ -27,7 +27,7 @@ $client->get_show($cid);
 $client->get_franchise($cid);
 ```
 
-## Query args for filtering by platform etc
+##### Query args for filtering by platform etc
 
 Any request either to the individual assets above or to lists below can include as it's final arg an array containing querystring arguments.  For instance
 
@@ -44,7 +44,7 @@ $client->get_asset($cid, array('platform-slug' => 'partnerplayer', 'platform-slu
 This array will auto-construct the appropriate query string, including escaping characters as needed.  Check the PBS Assets documentation <https://docs.pbs.org/display/CDA/Assets> for available query args -- the best documented examples are for platform-slug, which has possible values of 'allplatforms', 'partnerplayer', 'bento', 'pbsorg', 'videoportal'.
 
 
-## Unpublished assets
+##### Unpublished assets
 
 There is an additional flag required to get unpublished assets, as they're only available with a GET from the edit endpoint -- 
 
