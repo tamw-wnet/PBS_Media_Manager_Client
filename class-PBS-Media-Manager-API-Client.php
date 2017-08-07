@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * PBS Media Manager API Client.
@@ -6,6 +7,10 @@
  * Authors: William Tam (tamw@wnet.org), Augustus Mayo (amayo@tpt.org),
  * Aaron Crosman (aaron.crosman@cyberwoven.com)
  * version 2.0 2017-08-04
+ */
+
+/**
+ * Class PBS_Media_Manager_API_Client.
  */
 class PBS_Media_Manager_API_Client {
   private $client_id;
@@ -96,17 +101,26 @@ class PBS_Media_Manager_API_Client {
     return $ch;
   }
 
+  /**
+   * Reformat API responses as an array.
+   *
+   * @param string $response
+   *   The response from the API.
+   *
+   * @return array
+   *   The response formatted as an array.
+   */
   private function make_response_array($response) {
-    $myarray=array();
-    $data=explode("\n",$response);
-    $myarray['status']=$data[0];
+    $myarray = array();
+    $data = explode("\n", $response);
+    $myarray['status'] = $data[0];
     array_shift($data);
-    foreach($data as $part){
+    foreach ($data as $part) {
       if (json_decode($part)) {
         $myarray[] = json_decode($part);
         continue;
       }
-      $middle=explode(": ",$part,2);
+      $middle = explode(": ", $part, 2);
       $myarray[trim($middle[0])] = trim($middle[1]);
     }
     return $myarray;
@@ -249,7 +263,15 @@ class PBS_Media_Manager_API_Client {
     );
   }
 
-
+  /**
+   * Modify query strings for submission to the API.
+   *
+   * @param array $args
+   *   The arguments for the query.
+   *
+   * @return mixed|string
+   *   The modified query.
+   */
   public function build_pbs_querystring($args) {
     $querystring = !empty($args) ? "?" . http_build_query($args) : "";
     // PBS's endpoints don't like encoded entities.
@@ -274,7 +296,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|bool
    *   A successful request will return a 20x and nothing else.
    */
-   public function update_object($id, $type, $attribs = array()) {
+  public function update_object($id, $type, $attribs = array()) {
     /* In the MM API, update is a PATCH. */
     $endpoint = $this->_get_update_endpoint($id, $type);
     $data = array(
@@ -339,7 +361,6 @@ class PBS_Media_Manager_API_Client {
     /* successful request will return a 20x and nothing else */
     return TRUE;
   }
-
 
   /**
    * Main constructor for getting single items.
