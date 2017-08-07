@@ -96,6 +96,22 @@ class PBS_Media_Manager_API_Client {
     return $ch;
   }
 
+  private function make_response_array($response) {
+    $myarray=array();
+    $data=explode("\n",$response);
+    $myarray['status']=$data[0];
+    array_shift($data);
+    foreach($data as $part){
+      if (json_decode($part)) {
+        $myarray[] = json_decode($part);
+        continue;
+      }
+      $middle=explode(": ",$part,2);
+      $myarray[trim($middle[0])] = trim($middle[1]);
+    }
+    return $myarray;
+  }
+
   /**
    * Get request.
    *
@@ -115,6 +131,7 @@ class PBS_Media_Manager_API_Client {
     curl_close($ch);
     $json = json_decode($result, TRUE);
     if (empty($json)) {
+      $result = $this->make_response_array($result);
       return array(
         'errors' => array(
           'info' => $info,
@@ -174,6 +191,7 @@ class PBS_Media_Manager_API_Client {
     $errors = curl_error($ch);
     curl_close($ch);
     if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
+      $result = $this->make_response_array($result);
       return array(
         'errors' => array(
           'info' => $info,
