@@ -172,18 +172,18 @@ class PBS_Media_Manager_API_Client {
    * Asset, episode, special, collection, season.
    *
    * @param string $parent_id
-   *    The parent id. Can also be a slug.
+   *   The parent id. Can also be a slug.
    * @param string $parent_type
-   *    The parent type.
+   *   The parent type.
    * @param string $type
-   *    The type.
+   *   The type.
    * @param array $attribs
-   *    The attributes.
+   *   The attributes.
    *
    * @return array
-   *    On success returns the url path of the editable asset.
+   *   On success returns the url path of the editable asset.
    */
-  public function create_child($parent_id, $parent_type, $type, $attribs = array()) {
+  public function create_child($parent_id, $parent_type, $type, array $attribs = array()) {
 
     $endpoint = "/" . $parent_type . "s/" . $parent_id . "/" . $type . "s/";
     $data = array(
@@ -272,7 +272,7 @@ class PBS_Media_Manager_API_Client {
    * @return mixed|string
    *   The modified query.
    */
-  public function build_pbs_querystring($args) {
+  public function build_pbs_querystring(array $args) {
     $querystring = !empty($args) ? "?" . http_build_query($args) : "";
     // PBS's endpoints don't like encoded entities.
     $querystring = str_replace("%3A", ":", $querystring);
@@ -296,7 +296,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|bool
    *   A successful request will return a 20x and nothing else.
    */
-  public function update_object($id, $type, $attribs = array()) {
+  public function update_object($id, $type, array $attribs = array()) {
     /* In the MM API, update is a PATCH. */
     $endpoint = $this->_get_update_endpoint($id, $type);
     $data = array(
@@ -333,7 +333,7 @@ class PBS_Media_Manager_API_Client {
    * Delete an object.
    *
    * @param string $id
-   *    The ID.
+   *   The ID.
    * @param string $type
    *   The type.
    *
@@ -368,18 +368,18 @@ class PBS_Media_Manager_API_Client {
    * Asset, episode, special, collection, season, show, franchise, station.
    *
    * @param string $id
-   *    The ID. Can also be a slug.
+   *   The ID. Can also be a slug.
    * @param string $type
-   *    The type.
+   *   The type.
    * @param bool $private
-   *    Whether the item is private.
+   *   Whether the item is private.
    * @param array $queryargs
    *   The arguments for the query.
    *
    * @return array|mixed
-   *    The items.
+   *   The items.
    */
-  public function get_item_of_type($id, $type, $private = FALSE, $queryargs = array()) {
+  public function get_item_of_type($id, $type, $private = FALSE, array $queryargs = array()) {
     $endpoint = "/" . $type . "s/" . $id . "/";
     // Unpublished, 'private' items have to do a GET on the update endpoint.
     if ($private === TRUE) {
@@ -396,18 +396,17 @@ class PBS_Media_Manager_API_Client {
    * Main constructor for lists.
    *
    * @param string $endpoint
-   *    The endpoint.
+   *   The endpoint.
    * @param array $args
-   *    The arguments.  If a value is given for $args['page'], only the
-   *    page number will be returned.
+   *   The arguments.  If a value is given for $args['page'], only the
+   *   page number will be returned.
    * @param bool $include_metadata
-   *    Option to include metadata in the results.
+   *   Option to include metadata in the results.
    *
    * @return array
    *   An array of list of items.
    */
-  public function get_list_data($endpoint, $args = array(), $include_metadata
-    = FALSE) {
+  public function get_list_data($endpoint, array $args = array(), $include_metadata = FALSE) {
     /* By default only return the actual data, stripping meta and pagination
      * data including all results. If a value is given for page
      * only return page number. If include_metadata is true, return fields from
@@ -483,7 +482,7 @@ class PBS_Media_Manager_API_Client {
    * @return array
    *   An array of items.
    */
-  public function get_child_items_of_type($parent_id, $parent_type, $type, $queryargs = array()) {
+  public function get_child_items_of_type($parent_id, $parent_type, $type, array $queryargs = array()) {
     $query = "/" . $parent_type . "s/" . $parent_id . "/" . $type . "s/";
     return $this->get_list_data($query, $queryargs);
   }
@@ -533,7 +532,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|bool
    *   Returns an array of child assets.
    */
-  public function get_child_assets($parent_id, $parent_type = 'episode', $asset_type = 'all', $window = 'all', $queryargs = array()) {
+  public function get_child_assets($parent_id, $parent_type = 'episode', $asset_type = 'all', $window = 'all', array $queryargs = array()) {
 
     $asset_types = $this->validate_asset_type_list($asset_type, $parent_type);
     if (!$asset_types) {
@@ -649,7 +648,7 @@ class PBS_Media_Manager_API_Client {
    * @return array
    *   Returns the changelog.
    */
-  public function get_changelog($args = array()) {
+  public function get_changelog(array $args = array()) {
     if (empty($args['since'])) {
       // Default 'since' to be in the last 8hrs.
       $timezone = new DateTimeZone('UTC');
@@ -678,7 +677,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|mixed
    *   Returns the asset.
    */
-  public function get_asset($id, $private = FALSE, $queryargs = array()) {
+  public function get_asset($id, $private = FALSE, array $queryargs = array()) {
     return $this->get_item_of_type($id, 'asset', $private, $queryargs);
   }
 
@@ -693,7 +692,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|mixed
    *   Returns the episode.
    */
-  public function get_episode($id, $queryargs = array()) {
+  public function get_episode($id, array $queryargs = array()) {
     return $this->get_item_of_type($id, 'episode', $queryargs);
   }
 
@@ -708,7 +707,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|mixed
    *   Returns the special.
    */
-  public function get_special($id, $queryargs = array()) {
+  public function get_special($id, array $queryargs = array()) {
     return $this->get_item_of_type($id, 'special', $queryargs);
   }
 
@@ -723,7 +722,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|mixed
    *   Returns the collection.
    */
-  public function get_collection($id, $queryargs = array()) {
+  public function get_collection($id, array $queryargs = array()) {
     return $this->get_item_of_type($id, 'collection', $queryargs);
   }
 
@@ -738,7 +737,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|mixed
    *   Returns the season.
    */
-  public function get_season($id, $queryargs = array()) {
+  public function get_season($id, array $queryargs = array()) {
     return $this->get_item_of_type($id, 'season', $queryargs);
   }
 
@@ -753,7 +752,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|mixed
    *   Returns the show.
    */
-  public function get_show($id, $queryargs = array()) {
+  public function get_show($id, array $queryargs = array()) {
     return $this->get_item_of_type($id, 'show', $queryargs);
   }
 
@@ -768,7 +767,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|mixed
    *   Returns the asset.
    */
-  public function get_remote_asset($id, $queryargs = array()) {
+  public function get_remote_asset($id, array $queryargs = array()) {
     return $this->get_item_of_type($id, 'remote-asset', $queryargs);
   }
 
@@ -783,7 +782,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|mixed
    *   Returns the asset.
    */
-  public function get_franchise($id, $queryargs = array()) {
+  public function get_franchise($id, array $queryargs = array()) {
     return $this->get_item_of_type($id, 'franchise', $queryargs);
   }
 
@@ -798,7 +797,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|mixed
    *   Returns the station.
    */
-  public function get_station($id, $queryargs = array()) {
+  public function get_station($id, array $queryargs = array()) {
     return $this->get_item_of_type($id, 'station', $queryargs);
   }
 
@@ -817,7 +816,7 @@ class PBS_Media_Manager_API_Client {
    * @return array
    *   Returns a list of franchises.
    */
-  public function get_franchises($queryargs = array()) {
+  public function get_franchises(array $queryargs = array()) {
     $query = "/franchises/";
     return $this->get_list_data($query, $queryargs);
   }
@@ -833,7 +832,7 @@ class PBS_Media_Manager_API_Client {
    * @return array
    *   Returns a list of shows.
    */
-  public function get_shows($queryargs = array()) {
+  public function get_shows(array $queryargs = array()) {
     $query = "/shows/";
     return $this->get_list_data($query, $queryargs);
   }
@@ -851,7 +850,7 @@ class PBS_Media_Manager_API_Client {
    * @return array
    *   Returns a list of shows.
    */
-  public function get_franchise_shows($franchise_id, $queryargs = array()) {
+  public function get_franchise_shows($franchise_id, array $queryargs = array()) {
     return $this->get_child_items_of_type($franchise_id, 'franchise', 'show', $queryargs);
   }
 
@@ -866,7 +865,7 @@ class PBS_Media_Manager_API_Client {
    * @return array
    *   Returns a list of seasons.
    */
-  public function get_show_seasons($show_id, $queryargs = array()) {
+  public function get_show_seasons($show_id, array $queryargs = array()) {
     return $this->get_child_items_of_type($show_id, 'show', 'season', $queryargs);
   }
 
@@ -876,12 +875,12 @@ class PBS_Media_Manager_API_Client {
    * @param string $show_id
    *   The show ID.
    * @param array $queryargs
-   *    The query arguments.
+   *   The query arguments.
    *
    * @return array
    *   Returns a list of specials.
    */
-  public function get_show_specials($show_id, $queryargs = array()) {
+  public function get_show_specials($show_id, array $queryargs = array()) {
     return $this->get_child_items_of_type($show_id, 'show', 'special', $queryargs);
   }
 
@@ -896,7 +895,7 @@ class PBS_Media_Manager_API_Client {
    * @return array
    *   Returns a list of episodes.
    */
-  public function get_season_episodes($season_id, $queryargs = array()) {
+  public function get_season_episodes($season_id, array $queryargs = array()) {
     return $this->get_child_items_of_type($season_id, 'season', 'episode', $queryargs);
   }
 
@@ -922,7 +921,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|bool
    *   Returns a list of assets.
    */
-  public function get_episode_assets($episode_id, $asset_type = 'all', $window = 'all', $queryargs = array()) {
+  public function get_episode_assets($episode_id, $asset_type = 'all', $window = 'all', array $queryargs = array()) {
     return $this->get_child_assets($episode_id, 'episode', $asset_type, $window, $queryargs);
   }
 
@@ -941,7 +940,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|bool
    *   Returns a list of special assets.
    */
-  public function get_special_assets($special_id, $asset_type = 'all', $window = 'all', $queryargs = array()) {
+  public function get_special_assets($special_id, $asset_type = 'all', $window = 'all', array $queryargs = array()) {
     return $this->get_child_assets($special_id, 'special', $asset_type, $window, $queryargs);
   }
 
@@ -960,7 +959,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|bool
    *   Returns a list of season assets.
    */
-  public function get_season_assets($season_id, $asset_type = 'all', $window = 'all', $queryargs = array()) {
+  public function get_season_assets($season_id, $asset_type = 'all', $window = 'all', array $queryargs = array()) {
     return $this->get_child_assets($season_id, 'season', $asset_type, $window, $queryargs);
   }
 
@@ -979,7 +978,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|bool
    *   Returns a list of show assets.
    */
-  public function get_show_assets($show_id, $asset_type = 'all', $window = 'all', $queryargs = array()) {
+  public function get_show_assets($show_id, $asset_type = 'all', $window = 'all', array $queryargs = array()) {
     return $this->get_child_assets($show_id, 'show', $asset_type, $window, $queryargs);
   }
 
@@ -998,7 +997,7 @@ class PBS_Media_Manager_API_Client {
    * @return array|bool
    *   Returns a list of franchise assets.
    */
-  public function get_franchise_assets($franchise_id, $asset_type = 'all', $window = 'all', $queryargs = array()) {
+  public function get_franchise_assets($franchise_id, $asset_type = 'all', $window = 'all', array $queryargs = array()) {
     return $this->get_child_assets($franchise_id, 'franchise', $asset_type, $window, $queryargs);
   }
 
