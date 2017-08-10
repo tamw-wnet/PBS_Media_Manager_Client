@@ -317,6 +317,7 @@ class PBS_Media_Manager_API_Client {
     $errors = curl_error($ch);
     curl_close($ch);
     if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
+      $result = $this->make_response_array($result);
       return array(
         'errors' => array(
           'info' => $info,
@@ -350,6 +351,7 @@ class PBS_Media_Manager_API_Client {
     $errors = curl_error($ch);
     curl_close($ch);
     if (!in_array($info['http_code'], array(200, 201, 202, 204))) {
+      $result = $this->make_response_array($result);
       return array(
         'errors' => array(
           'info' => $info,
