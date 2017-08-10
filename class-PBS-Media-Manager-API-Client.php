@@ -114,7 +114,7 @@ class PBS_Media_Manager_API_Client {
     $myarray = array();
     $data = explode("\n", $response);
     if (strpos($data[0], 'HTTP') === 0) {
-      // the first line is a status code
+      // The first line is a status code.
       $myarray['status'] = $data[0];
       array_shift($data);
     }
@@ -195,7 +195,7 @@ class PBS_Media_Manager_API_Client {
         "attributes" => $attribs,
       ),
     );
-    /* in the MM API, create is a POST */
+    /* In the MM API, create is a POST. */
     $payload_json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     $request_url = $this->base_endpoint . $endpoint;
     $ch = $this->build_curl_handle($request_url);
