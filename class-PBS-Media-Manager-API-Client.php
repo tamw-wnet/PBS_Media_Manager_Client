@@ -113,8 +113,11 @@ class PBS_Media_Manager_API_Client {
   private function make_response_array($response) {
     $myarray = array();
     $data = explode("\n", $response);
-    $myarray['status'] = $data[0];
-    array_shift($data);
+    if (strpos($data[0], 'HTTP') === 0) {
+      // the first line is a status code
+      $myarray['status'] = $data[0];
+      array_shift($data);
+    }
     foreach ($data as $part) {
       if (json_decode($part)) {
         $myarray[] = json_decode($part);
