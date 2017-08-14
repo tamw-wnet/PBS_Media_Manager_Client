@@ -247,6 +247,8 @@ returns the asset object.
 
 
 ## Changelog
+* Version 2.0 -- changes to accomodate new PBS restriction on returning objects that are available on only specific platforms, and significant formatting fixes
+
 * Version 1.1 -- changed update object to take account for new PBS functionality of updatable episodes and specials, bugfix for certain url entities needing to be escaped
 
 * Version 1.0 STABLE -- refined results, documentation in place, can perform all core functions that the API provides.
