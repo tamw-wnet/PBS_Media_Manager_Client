@@ -5,8 +5,8 @@
  * PBS Media Manager API Client.
  *
  * Authors: William Tam (tamw@wnet.org), Augustus Mayo (amayo@tpt.org),
- * Aaron Crosman (aaron.crosman@cyberwoven.com)
- * version 2.0 2017-08-04
+ * Aaron Crosman (aaron.crosman@cyberwoven.com), Jess Snyder (jsnyder@weta.org)
+ * version 2.0.1 2017-08-14
  */
 
 /**
