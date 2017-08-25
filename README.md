@@ -1,8 +1,8 @@
 # PBS Media Manager Client
-PHP class that provides a client for the PBS Media Manager API
+PHP class that provides a client for the PBS Media Manager API.  Full documentation for that API is at <https://docs.pbs.org/display/CDA/Media+Manager+API>.
 
 ## Requirements
-The client requires at least PHP version 5.6, and the cURL library <http://php.net/manual/en/book.curl.php>
+The client requires at least PHP version 5.6, and the cURL library <http://php.net/manual/en/book.curl.php>.
 
 ## Usage
 Invoke the client as so:
@@ -27,12 +27,36 @@ $client->get_show($cid);
 $client->get_franchise($cid);
 ```
 
-There is an additional flag required to get unpublished objects, as they're only available with a GET from the edit endpoint -- 
+##### Query args for filtering by platform etc
+
+Any request either to the individual assets above or to lists below can include as it's final arg an array containing querystring arguments.  For instance
+
+```php
+$client->get_episode($cid, array('platform-slug' => 'partnerplayer'));
+```
+This 'platform-slug' argument is particularly important, because if a show, asset, or other object is set in the Media Manager environment to be available in anything less than 'all platforms', the object will only be retrieved if you include the platform-slug for one of the platforms that the object is explicitly set to be available for.
+
+Multiple platforms can be included like so
+```php
+$client->get_asset($cid, array('platform-slug' => 'partnerplayer', 'platform-slug' => 'bento'));
+```
+
+This array will auto-construct the appropriate query string, including escaping characters as needed.  Check the PBS Assets documentation <https://docs.pbs.org/display/CDA/Assets> for available query args -- the best documented examples are for platform-slug, which has possible values of 'allplatforms', 'partnerplayer', 'bento', 'pbsorg', 'videoportal'.
+
+
+##### Unpublished assets
+
+There is an additional flag required to get unpublished assets, as they're only available with a GET from the edit endpoint -- 
 
 ```php
 $client->get_asset($cid, true);
 ```
-The client id will need to have edit permission on the object to get that unpublished object
+The client id will need to have edit permission on the object to get that unpublished object.  The 'platform-slug' is NOT required to get the edit endpoint, but it will not fail --
+
+```php
+$client->get_asset($cid, true, array('platform-slug' => 'partnerplayer'));
+```
+will not fail.
 
 
 #### Get a list of available shows or franchises 
@@ -40,9 +64,24 @@ The client id will need to have edit permission on the object to get that unpubl
 ```php
 $client->get_shows();
 $client->get_franchises();
+$client->get_shows(array('platform-slug' => 'partnerplayer', 'slug' => 'newshour'));
+$client->get_franchises(array('platform-slug' => 'bento'));
 ```
 
+As noted above, a query argument array is an optional argument.
+
 #### Get a list of child elements of the given CID 
+
+```php
+$client->get_child_items_of_type($parent_id, $parent_type, $type, $queryargs = array());
+```
+
+To get a list of the assets for an episode that are available in the partner player,
+
+```php
+$client->get_child_items_of_type($episode_id, 'episode', 'asset', array('platform-slug' => 'partnerplayer'));
+```
+
 
 ##### Get shows, seasons, episodes 
 
@@ -54,14 +93,19 @@ $client->get_season_episodes($cid);
 
 NOTE that for any of our 'list' functions, the client returns an unpaged list of all available results, even though the Media Manager API from PBS automatically pages results. 
 For very large returns it may be useful to use paging -- the list of all available shows could be long, or a daily news show might have 300+ episodes in a season. 
-To implement paging, add an array arg with a 'page' element that is the corresponding paged from the PBS API -- eg 
+
+To implement paging, add an array arg with a 'page' element that is the corresponding page from the PBS API -- eg 
 
 ```php
 $client->get_shows(array('page' => 2));
 $client->get_season_episodes($cid, array('page' => 3));
 ```
 
+This array can also contain the platform-slug values etc.
+
 ##### Assets need more filtering, so getting assets allows for more args
+
+These next four asset-specific functions should probably be DEPRECATED in favor of the more generic get_child_items_of_type().
 
 ```php
 $client->get_episode_assets($episode_id, $asset_type='all', $window='all');
@@ -72,6 +116,13 @@ $client->get_franchise_assets($franchise_id, $asset_type='all', $window='all');
 
 get_episode_assets() etc returns the list of assets on success, or false if none are returned.  
 If there's an error with the request (such as a bad episode_id, some server problem, or a bad parameter), an 'errors' array is returned.
+
+In the above examples, the asset_type arg doesn't work well and the window arg doesn't work at all.  PBS changed their API model to allow those filters in the query string, so something like so is a better format example :
+
+```php
+$client->get_child_items_of_type($episode_id, 'episode', 'asset', array('platform-slug' => 'partnerplayer', 'type' => 'full_length', 'window' => 'all_members'));
+```
+
 
 
 ##### Getting images is a little different
@@ -124,7 +175,7 @@ $client->update_object($cid, $object_type, $attributes);
 
 args are
 * $cid of the object 
-* $object_type can be 'asset'.   For the moment, PBS doesn't support updating 'episode' or 'special' but they say they're coming.  'season', 'show', etc aren't on the roadmap.
+* $object_type can be 'asset', 'episode', or 'special'.   For the moment, PBS doesn't support 'season', 'show', etc.
 * $attributes is an array, matching the required/optional attributes for the object.  For instance an asset might have
 ```php
 $attributes = array(
@@ -196,13 +247,19 @@ returns the asset object.
 
 
 ## Changelog
+* Version 2.0 -- changes to accomodate new PBS restriction on returning objects that are available on only specific platforms, and significant formatting fixes
+
+* Version 1.1 -- changed update object to take account for new PBS functionality of updatable episodes and specials, bugfix for certain url entities needing to be escaped
+
 * Version 1.0 STABLE -- refined results, documentation in place, can perform all core functions that the API provides.
+
 * Version .01 ALPHA -- connects to API, provides basic read, list, update, create, and delete functionality.
 
 ## Authors
 * William Tam, WNET/IEG
 * Augustus Mayo, TPT
 * Aaron Crosman, Cyberwoven
+* Jess Snyder, WETA
 
 ## Licence
 The PBS Media Manager Client is licensed under the GPL v2 or later.
