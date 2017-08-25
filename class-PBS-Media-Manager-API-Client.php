@@ -598,6 +598,11 @@ class PBS_Media_Manager_API_Client {
   public function get_images($parent_id, $parent_type, $image_profile = '') {
     $returnary = array();
     $parent = $this->get_item_of_type($parent_id, $parent_type);
+
+    if (empty($response_object['data']['attributes']['images'])) {
+      return $returnary;
+    }
+
     foreach ($parent['data']['attributes']['images'] as $image) {
       if (!empty($image_profile)) {
         if (stristr($image['profile'], $image_profile)) {
@@ -627,14 +632,14 @@ class PBS_Media_Manager_API_Client {
    * @return array|bool
    *   The image array for the provided profile.
    */
-   public function extract_image($response_object, $image_profile) {
+  public static function extract_image($response_object, $image_profile) {
      // If there are no images on the response_object bail.
-     if (empty($response_object['data']['attributes']['images'])) {
+     if (empty($response_object['attributes']['images'])) {
        return FALSE;
      }
 
      // Check the images for the one we want.
-     foreach ($response_object['data']['attributes']['images'] as $image) {
+     foreach ($response_object['attributes']['images'] as $image) {
        if (stristr($image['profile'], $image_profile)) {
          return $image;
        }
@@ -663,7 +668,7 @@ class PBS_Media_Manager_API_Client {
    * @param string $type
    *   The image type to convert the image to, maintains default if not set.
    */
-  public function alter_pbs_image($image_url, $operation, $width, $height, $type = '') {
+  public static function alter_pbs_image($image_url, $operation, $width, $height, $type = '') {
 
     if ($type == '') {
       $list = explode('.', $image_url);
@@ -672,8 +677,8 @@ class PBS_Media_Manager_API_Client {
     else {
       $extension = $type;
     }
-    // PBS supports HTTPS now, so anything with http:// should switch to //.
-    $image_url = str_replace("http://", "//", $image_url);
+    // PBS supports HTTPS, so use it.
+    $image_url = str_replace("http://", "https://", $image_url);
 
     $new_url = $image_url . '.' . $operation . '.' . $width . "x" . $height . '.' . $extension;
 
