@@ -589,7 +589,7 @@ class PBS_Media_Manager_API_Client {
    *   Parent ID.
    * @param string $parent_type
    *   Parent type.
-   * @param string $image_prifile
+   * @param string $image_profile
    *   A single image to extract.
    *
    * @return array
