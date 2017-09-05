@@ -281,6 +281,9 @@ class PBS_Media_Manager_API_Client {
     $querystring = str_replace("%3A", ":", $querystring);
     $querystring = str_replace("%3D", "=", $querystring);
     $querystring = str_replace("%26", "&", $querystring);
+    $querystring = str_replace("%2C", ",", $querystring);
+    $querystring = str_replace("%28", "(", $querystring);
+    $querystring = str_replace("%29", ")", $querystring);
     return $querystring;
   }
 
