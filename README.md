@@ -27,21 +27,33 @@ $client->get_show($cid);
 $client->get_franchise($cid);
 ```
 
-##### Query args for filtering by platform etc
+##### Query args for filtering by platform and/or audience 
 
 Any request either to the individual assets above or to lists below can include as it's final arg an array containing querystring arguments.  For instance
 
 ```php
-$client->get_episode($cid, array('platform-slug' => 'partnerplayer'));
+$client->get_show($cid, array('platform-slug' => 'partnerplayer'));
 ```
-This 'platform-slug' argument is particularly important, because if a show, asset, or other object is set in the Media Manager environment to be available in anything less than 'all platforms', the object will only be retrieved if you include the platform-slug for one of the platforms that the object is explicitly set to be available for.
+This 'platform-slug' argument is particularly important, because if a show, asset, or franchise is set in the Media Manager environment to be available in anything other than 'all platforms', the object will only be retrieved if you include the platform-slug for one of the platforms that the object is explicitly set to be available for.
 
-Multiple platforms can be included like so
+Multiple platform-slugs -- or any filter argument with multiple values -- should be passed in an array, like so
 ```php
-$client->get_asset($cid, array('platform-slug' => 'partnerplayer', 'platform-slug' => 'bento'));
+$client->get_asset($cid, array('platform-slug' => array('partnerplayer', 'bento')));
 ```
 
 This array will auto-construct the appropriate query string, including escaping characters as needed.  Check the PBS Assets documentation <https://docs.pbs.org/display/CDA/Assets> for available query args -- the best documented examples are for platform-slug, which has possible values of 'allplatforms', 'partnerplayer', 'bento', 'pbsorg', 'videoportal'.
+
+##### Shows and audiences
+
+'shows' have 'audience-scopes'.  This is unique to 'shows'.  get_shows() will return all shows with the 'all_platforms' platform slug, but those shows may be otherwise unavailable.  <https://docs.pbs.org/display/CDA/Shows#Shows-Methods> includes details about the 'national', 'local', and 'kids' audience-scopes.  If a show has the 'local' audience-scope, an 'audience' argument (call letters) must also be included.  These args should be included in the same array as other filtering args, eg
+```php
+$client->get_shows( array('platform-slug' => 'partnerplayer', 'audience-scope' => 'local', 'audience' => 'weta') );
+```
+
+To get a list of shows that are the UNION of multiple audiences-scopes and/or audiences, those arguments should be an array if they have multiple values, like so
+```php
+$client->get_shows( array('platform-slug' => 'partnerplayer', 'audience-scope' => array('local','national'), 'audience' => array('wnet','wliw') ) );
+```
 
 
 ##### Unpublished assets

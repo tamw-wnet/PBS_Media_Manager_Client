@@ -284,6 +284,8 @@ class PBS_Media_Manager_API_Client {
     $querystring = str_replace("%2C", ",", $querystring);
     $querystring = str_replace("%28", "(", $querystring);
     $querystring = str_replace("%29", ")", $querystring);
+    // special case for audience-scope[x], platform-slug[x], etc
+    $querystring = preg_replace("/(%5B\d%5D)/", "", $querystring);
     return $querystring;
   }
 
