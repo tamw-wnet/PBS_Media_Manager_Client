@@ -259,6 +259,8 @@ returns the asset object.
 
 
 ## Changelog
+* Version 2.0.2 -- proper handling and documentation for filters with multiple values
+
 * Version 2.0 -- changes to accomodate new PBS restriction on returning objects that are available on only specific platforms, and significant formatting fixes
 
 * Version 1.1 -- changed update object to take account for new PBS functionality of updatable episodes and specials, bugfix for certain url entities needing to be escaped
