@@ -627,9 +627,9 @@ class PBS_Media_Manager_API_Client {
     $endpoint = "/assets/legacy/?tp_media_id=" . $tp_media_id;
     $response = $this->get_request($endpoint);
     if (!empty($response["errors"]["info"]["http_code"]) && $response["errors"]["info"]["http_code"] == 404) {
-      // If this video is private/unpublished, retry the edit endpoint.
+      // The request fails usually because the resolved asset may require additional args, such as platform-slug.
       preg_match("/.*?(\/assets\/.*)\/$/", $response["errors"]["info"]["url"], $output_array);
-      if (!empty($output_array[1])) {
+      if (!empty($output_array[1]) && !empty($queryargs)) {
         $querystring = $this->build_pbs_querystring($queryargs);
         $response = $this->get_request($output_array[1] . $querystring);
       }
