@@ -252,13 +252,22 @@ $client->get_changelog( array('since' => '2017-03-06T06:35:36.001Z', 'type' => '
 #### Look up an asset by TP Media Id
 
 ```php
-$client->get_asset_by_tp_media_id($tp_media_id)
+$client->get_asset_by_tp_media_id($tp_media_id, $queryargs=array())
 ```
 
-returns the asset object.
+returns the asset object. If the asset is unavailable for some reason, an "errors" array that includes the resolved asset URL will be returned.  
+For instance, if the asset isn't available on 'all' platforms and no platform-slug argument was included. 
+
+Here's an example:
+```php
+$client->get_asset_by_tp_media_id('2365752382', array('platform-slug' => 'partnerplayer'));
+```
+
 
 
 ## Changelog
+* Version 2.0.3 -- additional arguments possible for get_asset_by_tp_media_id()
+
 * Version 2.0.2 -- proper handling and documentation for filters with multiple values
 
 * Version 2.0 -- changes to accomodate new PBS restriction on returning objects that are available on only specific platforms, and significant formatting fixes
