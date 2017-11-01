@@ -710,9 +710,15 @@ class PBS_Media_Manager_API_Client {
     if (!empty($response["errors"]["info"]["http_code"]) && $response["errors"]["info"]["http_code"] == 404) {
       // The request fails usually because the resolved asset may require additional args, such as platform-slug.
       preg_match("/.*?(\/assets\/.*)\/$/", $response["errors"]["info"]["url"], $output_array);
-      if (!empty($output_array[1]) && !empty($queryargs)) {
-        $querystring = $this->build_pbs_querystring($queryargs);
-        $response = $this->get_request($output_array[1] . $querystring);
+      if (!empty($output_array[1])) {
+        if (!empty($queryargs)) {
+          $querystring = $this->build_pbs_querystring($queryargs);
+          $response = $this->get_request($output_array[1] . $querystring);
+        } else {
+          // failback to the 'edit' endpoint if no queryargs provided.
+          // May return private/unpublished assets, or assets not available on this platform
+          $response = $this->get_request($output_array[1] . "/edit/");
+        }
       }
     }
     return $response;
