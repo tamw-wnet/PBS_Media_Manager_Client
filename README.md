@@ -144,6 +144,10 @@ $client->get_episode_images($episode_id);
 ```
 etc
 
+```php
+$client->get_images($parent_id, $parent_type, $image_profile = '')
+```
+
 ### Creating items
 
 There's a base creation method
