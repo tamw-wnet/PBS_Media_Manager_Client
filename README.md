@@ -144,6 +144,10 @@ $client->get_episode_images($episode_id);
 ```
 etc
 
+```php
+$client->get_images($parent_id, $parent_type, $image_profile = '')
+```
+
 ### Creating items
 
 There's a base creation method
@@ -259,6 +263,8 @@ returns the asset object.
 
 
 ## Changelog
+* Version 2.0.3 -- new get_images behavior
+
 * Version 2.0.2 -- proper handling and documentation for filters with multiple values
 
 * Version 2.0 -- changes to accomodate new PBS restriction on returning objects that are available on only specific platforms, and significant formatting fixes
