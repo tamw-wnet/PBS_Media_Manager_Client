@@ -6,7 +6,7 @@
  *
  * Authors: William Tam (tamw@wnet.org), Augustus Mayo (amayo@tpt.org),
  * Aaron Crosman (aaron.crosman@cyberwoven.com), Jess Snyder (jsnyder@weta.org)
- * version 2.0.2 2017-09-06
+ * version 2.0.4 2017-11-01
  */
 
 /**

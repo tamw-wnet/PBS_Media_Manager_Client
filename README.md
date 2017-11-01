@@ -266,7 +266,9 @@ $client->get_asset_by_tp_media_id('2365752382', array('platform-slug' => 'partne
 
 
 ## Changelog
-* Version 2.0.3 -- additional arguments possible for get_asset_by_tp_media_id()
+* Version 2.0.4 -- additional arguments possible for get_asset_by_tp_media_id()
+
+* Version 2.0.3 -- new get_images behavior
 
 * Version 2.0.2 -- proper handling and documentation for filters with multiple values
 
