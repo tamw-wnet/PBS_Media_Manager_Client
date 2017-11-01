@@ -614,20 +614,24 @@ class PBS_Media_Manager_API_Client {
    *
    * @param string $tp_media_id
    *   TP Media Object ID.
+   * 
+   * @param array $queryargs
+   *   The arguments for the query.
    *
    * @return array|mixed
    *   Returns an asset.
    */
-  public function get_asset_by_tp_media_id($tp_media_id) {
+  public function get_asset_by_tp_media_id($tp_media_id, $queryargs=array()) {
     /* Returns the corresponding asset if it exists.  Note that they're
      * calling it tp_media_id, NOT tp_media_object_id */
-    $query = "/assets/legacy/?tp_media_id=" . $tp_media_id;
-    $response = $this->get_request($query);
+    $endpoint = "/assets/legacy/?tp_media_id=" . $tp_media_id;
+    $response = $this->get_request($endpoint);
     if (!empty($response["errors"]["info"]["http_code"]) && $response["errors"]["info"]["http_code"] == 404) {
       // If this video is private/unpublished, retry the edit endpoint.
       preg_match("/.*?(\/assets\/.*)\/$/", $response["errors"]["info"]["url"], $output_array);
       if (!empty($output_array[1])) {
-        $response = $this->get_request($output_array[1] . "/edit/");
+        $querystring = $this->build_pbs_querystring($queryargs);
+        $response = $this->get_request($output_array[1] . $querystring);
       }
     }
     return $response;
