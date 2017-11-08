@@ -850,7 +850,7 @@ class PBS_Media_Manager_API_Client {
    *   The query arguments. For example, show-id or type.
    *
    * @return array
-   *   Returns a list of shows.
+   *   Returns a list of assets.
    */
   public function get_assets($queryargs = array()) {
     $query = "/assets/";
