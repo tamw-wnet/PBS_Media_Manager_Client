@@ -856,6 +856,7 @@ class PBS_Media_Manager_API_Client {
     $query = "/assets/";
     return $this->get_list_data($query, $queryargs);
   }
+
   /* Shortcut functions for lists of child objects. */
 
   /**
