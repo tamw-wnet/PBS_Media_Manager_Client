@@ -82,6 +82,17 @@ $client->get_franchises(array('platform-slug' => 'bento'));
 
 As noted above, a query argument array is an optional argument.
 
+#### Get a list of available assets 
+
+```php
+$client->get_assets();
+$client->get_assets(array('platform-slug' => 'partnerplayer', 'show-id' => 
+{show_id}));
+$client->assets(array('platform-slug' => 'partnerplayer', 'show-id' => {show_id}, 'type' => 'full_length));
+```
+
+As noted above, a query argument array is an optional argument. Adding the show-id will return all assets belonging to that show, regardless of the hierarchy (i.e., it returns assets for all seasons, episodes, or specials connected to the show).
+
 #### Get a list of child elements of the given CID 
 
 ```php

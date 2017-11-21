@@ -929,6 +929,20 @@ class PBS_Media_Manager_API_Client {
     return $this->get_list_data($query, $queryargs);
   }
 
+  /**
+   * Get a list of assets.
+   *
+   * @param array $queryargs
+   *   The query arguments. For example, show-id or type.
+   *
+   * @return array
+   *   Returns a list of assets.
+   */
+  public function get_assets($queryargs = array()) {
+    $query = "/assets/";
+    return $this->get_list_data($query, $queryargs);
+  }
+
   /* Shortcut functions for lists of child objects. */
 
   /**
