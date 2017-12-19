@@ -124,6 +124,12 @@ $client->get_shows(array('page' => 2));
 $client->get_season_episodes($cid, array('page' => 3));
 ```
 
+Additionally you can combine the 'page' element with a 'page-size' element to control how many elements the returned page contains. 'page-size' generally supports sizes of 1-50.
+
+```php
+$client->get_shows(array('page-size' => 10, 'page' => 2)); // Returns shows 11 through 20
+```
+
 This array can also contain the platform-slug values etc.
 
 ##### Assets need more filtering, so getting assets allows for more args
