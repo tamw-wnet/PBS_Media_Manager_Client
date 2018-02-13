@@ -489,13 +489,15 @@ class PBS_Media_Manager_API_Client {
    *   Type.
    * @param array $queryargs
    *   The arguments for the query.
+   * @param bool $include_metadata
+   *   Option to include metadata in the results.
    *
    * @return array
    *   An array of items.
    */
-  public function get_child_items_of_type($parent_id, $parent_type, $type, $queryargs = array()) {
+  public function get_child_items_of_type($parent_id, $parent_type, $type, $queryargs = array(), $include_metadata = FALSE) {
     $query = "/" . $parent_type . "s/" . $parent_id . "/" . $type . "s/";
-    return $this->get_list_data($query, $queryargs);
+    return $this->get_list_data($query, $queryargs, $include_metadata);
   }
 
   /**
