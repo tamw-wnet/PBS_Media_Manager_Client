@@ -88,10 +88,16 @@ As noted above, a query argument array is an optional argument.
 $client->get_assets();
 $client->get_assets(array('platform-slug' => 'partnerplayer', 'show-id' => 
 {show_id}));
-$client->assets(array('platform-slug' => 'partnerplayer', 'show-id' => {show_id}, 'type' => 'full_length));
+$client->get_assets(array('platform-slug' => 'partnerplayer', 'show-id' => {show_id}, 'type' => 'full_length));
 ```
 
 As noted above, a query argument array is an optional argument. Adding the show-id will return all assets belonging to that show, regardless of the hierarchy (i.e., it returns assets for all seasons, episodes, or specials connected to the show).
+
+You can look up an asset by TP Media ID using this method also:
+```php
+$client->get_assets(array('tp-media-id' => $tp_media_id, 'platform-slug' => 'partnerplayer'));
+```
+
 
 #### Get a list of child elements of the given CID 
 
@@ -277,6 +283,13 @@ $client->get_asset_by_tp_media_id($tp_media_id)
 ```
 
 returns the asset object.
+
+Note that this can also be accomplished with 
+
+```php
+$client->get_assets(array('tp-media-id' => $tp_media_id));
+```
+
 
 
 ## Changelog
