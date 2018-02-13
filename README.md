@@ -96,7 +96,7 @@ As noted above, a query argument array is an optional argument. Adding the show-
 #### Get a list of child elements of the given CID 
 
 ```php
-$client->get_child_items_of_type($parent_id, $parent_type, $type, $queryargs = array());
+$client->get_child_items_of_type($parent_id, $parent_type, $type, $queryargs = array(), $include_metadata = FALSE);
 ```
 
 To get a list of the assets for an episode that are available in the partner player,
