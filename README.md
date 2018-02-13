@@ -270,10 +270,10 @@ More details on options in the PBS documentation from <https://docs.pbs.org/disp
 
 No 'since' given will dump all changes in the last 24 hours.
 
-Here's an example of combining args -- all assets updated since March 6 at 6:35pm UTC:
+Here's an example of combining args -- all assets updated since March 6 at 6:35pm UTC, sorted oldest to newest
 
 ```php
-$client->get_changelog( array('since' => '2017-03-06T06:35:36.001Z', 'type' => 'asset', 'action' => 'update'));
+$client->get_changelog( array('since' => '2017-03-06T06:35:36.001Z', 'sort' => 'timestamp', 'type' => 'asset', 'action' => 'update'));
 ```
 
 #### Look up an asset by TP Media Id
