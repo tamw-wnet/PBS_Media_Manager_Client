@@ -276,7 +276,8 @@ Here's an example of combining args -- all assets updated since March 6 at 6:35p
 $client->get_changelog( array('since' => '2017-03-06T06:35:36.001Z', 'sort' => 'timestamp', 'type' => 'asset', 'action' => 'update'));
 ```
 
-#### Look up an asset by TP Media Id
+#### Look up an asset by TP Media ID
+The TP Media ID that was used throughout the "old" COVE API, Merlin, and is still surfaced in the URLs for various videos, is an 10-digit number, like 3009849339, and would appear (for instance) in the URL for an iframe, like https://player.pbs.org/portalplayer/3009849339/ or https://player.pbs.org/widget/partnerplayer/3009849339/ .  
 
 ```php
 $client->get_asset_by_tp_media_id($tp_media_id)
@@ -290,6 +291,7 @@ Note that this can also be accomplished with
 $client->get_assets(array('tp-media-id' => $tp_media_id));
 ```
 
+NOTE: TP Media IDs are NOT, by default, returned in the data from the Media Manager API.  This is set on a per-keypair basis.  If TP Media ID's aren't appearing in your asset results, or if you want to do the lookup by TP Media ID, you'll need to submit a ticket to PBS via the PBS Digital Support portal; "Please enable TP Media IDs for my Media Manager API Keys" should do it.   PBS may at some point phase out the TP Media ID.
 
 
 ## Changelog
