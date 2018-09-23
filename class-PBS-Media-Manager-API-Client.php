@@ -6,7 +6,7 @@
  *
  * Authors: William Tam (tamw@wnet.org), Augustus Mayo (amayo@tpt.org),
  * Aaron Crosman (aaron.crosman@cyberwoven.com), Jess Snyder (jsnyder@weta.org)
- * version 2.0.3 2017-10-31
+ * version 2.0.4 2017-11-01
  */
 
 /**
@@ -704,20 +704,30 @@ class PBS_Media_Manager_API_Client {
    *
    * @param string $tp_media_id
    *   TP Media Object ID.
+   * 
+   * @param array $queryargs
+   *   The arguments for the query.
    *
    * @return array|mixed
    *   Returns an asset.
    */
-  public function get_asset_by_tp_media_id($tp_media_id) {
+  public function get_asset_by_tp_media_id($tp_media_id, $queryargs=array()) {
     /* Returns the corresponding asset if it exists.  Note that they're
      * calling it tp_media_id, NOT tp_media_object_id */
-    $query = "/assets/legacy/?tp_media_id=" . $tp_media_id;
-    $response = $this->get_request($query);
+    $endpoint = "/assets/legacy/?tp_media_id=" . $tp_media_id;
+    $response = $this->get_request($endpoint);
     if (!empty($response["errors"]["info"]["http_code"]) && $response["errors"]["info"]["http_code"] == 404) {
-      // If this video is private/unpublished, retry the edit endpoint.
+      // The request fails usually because the resolved asset may require additional args, such as platform-slug.
       preg_match("/.*?(\/assets\/.*)\/$/", $response["errors"]["info"]["url"], $output_array);
       if (!empty($output_array[1])) {
-        $response = $this->get_request($output_array[1] . "/edit/");
+        if (!empty($queryargs)) {
+          $querystring = $this->build_pbs_querystring($queryargs);
+          $response = $this->get_request($output_array[1] . $querystring);
+        } else {
+          // failback to the 'edit' endpoint if no queryargs provided.
+          // May return private/unpublished assets, or assets not available on this platform
+          $response = $this->get_request($output_array[1] . "/edit/");
+        }
       }
     }
     return $response;

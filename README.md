@@ -280,10 +280,17 @@ $client->get_changelog( array('since' => '2017-03-06T06:35:36.001Z', 'sort' => '
 The TP Media ID that was used throughout the "old" COVE API, Merlin, and is still surfaced in the URLs for various videos, is an 10-digit number, like 3009849339, and would appear (for instance) in the URL for an iframe, like https://player.pbs.org/portalplayer/3009849339/ or https://player.pbs.org/widget/partnerplayer/3009849339/ .  
 
 ```php
-$client->get_asset_by_tp_media_id($tp_media_id)
+$client->get_asset_by_tp_media_id($tp_media_id, $queryargs=array())
 ```
 
-returns the asset object.
+returns the asset object. If the asset is unavailable for some reason, an "errors" array that includes the resolved asset URL will be returned.  
+For instance, if the asset isn't available on 'all' platforms and no platform-slug argument was included. 
+
+Here's an example:
+```php
+$client->get_asset_by_tp_media_id('2365752382', array('platform-slug' => 'partnerplayer'));
+```
+
 
 Note that this can also be accomplished with 
 
@@ -295,6 +302,8 @@ NOTE: TP Media IDs are NOT, by default, returned in the data from the Media Mana
 
 
 ## Changelog
+* Version 2.0.4 -- additional arguments possible for get_asset_by_tp_media_id()
+
 * Version 2.0.3 -- new get_images behavior
 
 * Version 2.0.2 -- proper handling and documentation for filters with multiple values
