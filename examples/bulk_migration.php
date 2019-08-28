@@ -27,21 +27,23 @@
 require('../class-PBS-Media-Manager-API-Client.php');
 
 
-function assign_extras_to_episodes($show_id, $client) {
+function assign_extras_to_episodes($show_id, $client, $ordinal_seasons = false) {
   /* this function uses the client object to retrieve the list of 'extras' that are 
    * assigned to the show_id  -- assets that are assigned to that show
    * but NOT assigned to any specific season, special, or episode -- 
    * and attempts to assign it to an episode with the same premiered_on value.
    * 
-   * The function assumes year-based seasons.  
+   * The function assumes year-based seasons. $ordinal_seasons = true will make it look for numeric seasons
    *
    * If no matching episode or year is found, the function echos a notice.  
    *
    * Because the function only looks at 'unassigned' assets, it can be 
    * run multiple times on the same 'show' as episodes are created to re-attempt the match.  */
-  $curr_year = false;
-  $curr_year_id = '';
+  $curr_season_ordinal = 0;
+  $season_ordinal = 0;
+  $curr_season_id = '';
   $curr_episodes = false;
+  $curr_season_last_episode_date = '1970-01-01';
   $count = 1;
   $extras = array();
   while ($raw_extras = $client->get_show_assets($show_id, 'all', 'all', array('sort' => 'premiered_on', 'page' => $count))) {
@@ -59,26 +61,36 @@ function assign_extras_to_episodes($show_id, $client) {
   if (empty($extras)) {
     return;
   }
-  echo " extras found.\n"; 
+  echo " extras found.\n";
+  $count = 0; 
   foreach ($extras as $asset) {
     $thisdate = $asset['premiered_on'];
-    $date = explode('-', $thisdate); // date is formatted yyyy-mm-dd
-    $year  = $date[0];
-    if ($year != $curr_year) {
-      echo 'getting season ' . $year . "\n";
+
+    if (empty($ordinal_seasons)) {
+      // year based seasons
+      $date = explode('-', $thisdate); // date is formatted yyyy-mm-dd
+      $season_ordinal  = $date[0];
+    } else {
+      // number based seasons
+      if (strtotime($curr_season_last_episode_date) < strtotime($thisdate)) {
+        $season_ordinal++;
+      }
+    }
+    if ($season_ordinal != $curr_season_ordinal) {
+      echo "\nseason " . $season_ordinal . "\n";
       // get a new seasons worth of episodes to select from
-      $year_id = get_season_by_ordinal($year, $show_id, $client);
-      if (!$year_id || !empty($year_id['errors'])) {
-        echo $year_id['errors'];
-        echo('no season for ' . $year . " so skipping\n");
+      $season_id = get_season_by_ordinal($season_ordinal, $show_id, $client);
+      if (!$season_id || !empty($season_id['errors'])) {
+        echo $season_id['errors'];
+        echo('no season for ' . $season_ordinal . " so skipping\n");
         continue;
       }
-      $curr_year = $year;
-      $curr_year_id = $year_id;
+      $curr_season_ordinal = $season_ordinal;
+      $curr_season_id = $season_id;
       // repopulate the current season episode array since we're in a different season
       unset($curr_episodes);
       unset($raw_season); 
-      $raw_season = $client->get_season_episodes($curr_year_id);
+      $raw_season = $client->get_season_episodes($curr_season_id);
       $curr_episodes = array();
       foreach ($raw_season as $episode) {
         $this_ep_date = $episode['attributes']['premiered_on']; 
