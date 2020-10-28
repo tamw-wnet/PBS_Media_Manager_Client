@@ -181,7 +181,7 @@ $client->create_child($cid, $parent_type, $child_type, $attributes);
 args are
 * $cid (of the parent)
 * $parent_type can be 'episode', 'special', 'season', 'show'
-* $child_type can be 'asset', 'episode', or 'special'
+* $child_type can be 'asset', 'episode', 'special', or 'season'
 * $attributes is an array, matching the required/optional attributes for the child.  For instance an asset might have
 
 ```php
@@ -193,6 +193,12 @@ $attributes = array(
        'end' => '2020-01-01 00:00:00'
      )
   )
+);
+```
+while a 'season' has much less metadata and would be 
+```php
+$attributes = array(
+  'ordinal' => 2019
 );
 ```
 
@@ -214,7 +220,7 @@ $client->update_object($cid, $object_type, $attributes);
 
 args are
 * $cid of the object 
-* $object_type can be 'asset', 'episode', or 'special'.   For the moment, PBS doesn't support 'season', 'show', etc.
+* $object_type can be 'asset', 'episode', or 'special'.   For the moment, PBS doesn't support 'season' (NOTE: possible that 'season' can be updated but not sure how that would work -- changing the ordinal for a season has a minimal use case), 'show' (NOTE: possible that 'show' can be updated via API but most metadata is read-only by the producer), etc.
 * $attributes is an array, matching the required/optional attributes for the object.  For instance an asset might have
 ```php
 $attributes = array(
