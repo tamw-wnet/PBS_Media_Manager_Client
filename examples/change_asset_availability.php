@@ -11,7 +11,7 @@ $api_id = 'your api id';
 $api_secret = 'your secret';
 
 /* the 'content id' for the show you're updating you'll get from the Media Manager console */
-$show_id = 'a14608dc-b896-4761-bb6a-2be84e6575bd';
+$show_id = 'your content id';
 
 
 $requestor = new PBS_Media_Manager_API_Client($api_id, $api_secret, $baseurl);
