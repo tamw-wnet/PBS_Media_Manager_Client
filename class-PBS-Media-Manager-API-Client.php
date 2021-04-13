@@ -6,7 +6,7 @@
  *
  * Authors: William Tam (tamw@wnet.org), Augustus Mayo (amayo@tpt.org),
  * Aaron Crosman (aaron.crosman@cyberwoven.com), Jess Snyder (jsnyder@weta.org)
- * version 2.0.4 2019-02-26
+ * version 2.0.5 2021-04-13
  */
 
 /**
@@ -232,7 +232,7 @@ class PBS_Media_Manager_API_Client {
      */
     // Get just the URI.
     $matches = array();
-    preg_match("/(Location|URI): .*?\/([a-f0-9\-]+)\/(edit\/)?(\r|\n|\r\n)/", $result, $matches);
+    preg_match("/(Location|URI): .*?\/([a-f0-9\-]+)\/(edit\/)?(\r|\n|\r\n)/i", $result, $matches);
 
     // TODO: Unsafe indexing, how should errors be handled?
     return $matches[2];
