@@ -301,6 +301,8 @@ NOTE: TP Media IDs are NOT, by default, returned in the data from the Media Mana
 
 
 ## Changelog
+* Version 2.0.5 -- bugfix for AWS inconsistency in 'Location' header
+
 * Version 2.0.4 -- documentation updates and bugfixes
 
 * Version 2.0.3 -- new get_images behavior
